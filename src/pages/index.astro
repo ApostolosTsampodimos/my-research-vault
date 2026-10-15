@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const allMaterials = await getCollection('materials', ({ data }) => !data.draft);
+
+allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const types = ['all', 'talk', 'poster', 'animation', 'lecture', 'paper'] as const;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
+}
+---
+<Base title="Research Archive — Apostolos Tsampodimos" currentPage="index">
+  <div class="page-header">
+    <h1 class="page-title">Research Archive</h1>
+    <p class="page-subtitle">Talks, animations, lecture notes, and papers — physics &amp; cosmology.</p>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    {types.map(t => (
+      <button class:list={['filter-btn', { active: t === 'all' }]} data-type={t}>
+        {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
+        {t !== 'all' && (
+          <span class="filter-count">
+            ({allMaterials.filter(m => m.data.type === t).length})
+          </span>
+        )}
+        {t === 'all' && (
+          <span class="filter-count">({allMaterials.length})</span>
+        )}
+      </button>
+    ))}
+  </div>
+
+  <div class="materials-grid" id="materials-grid">
+    {allMaterials.length === 0 && (
+      <div class="empty-state">No materials yet — add .md files to src/content/materials/</div>
+    )}
+    {allMaterials.map(item => (
+      <article class="card" data-type={item.data.type}>
+        <div class="card-top">
+          <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
+          <span class="card-meta">{formatDate(item.data.date)}</span>
+        </div>
+
+        <h2 class="card-title">
+          <a href={`/${item.id}/`}>{item.data.title}</a>
+        </h2>
+
+        {item.data.venue && (
+          <p class="card-meta">{item.data.venue}</p>
+        )}
+
+        {item.data.abstract && (
+          <p class="card-abstract">{item.data.abstract}</p>
+        )}
+
+        {item.data.tags.length > 0 && (
+          <div class="card-tags">
+            {item.data.tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        )}
+
+        <div class="card-actions">
+          <a href={`/${item.id}/`} class="btn btn-primary">Details →</a>
+          {item.data.slides && (
+            <a href={item.data.slides} class="btn" target="_blank" rel="noopener">Slides</a>
+          )}
+          {item.data.pdf && (
+            <a href={item.data.pdf} class="btn" download>PDF</a>
+          )}
+          {item.data.video && (
+            <a href={`/${item.id}/`} class="btn">▶ Video</a>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</Base>
+
+<script>
+  const bar = document.getElementById('filter-bar')!;
+  const grid = document.getElementById('materials-grid')!;
+
+  bar.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest<HTMLButtonElement>('.filter-btn');
+    if (!btn) return;
+
+    bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const type = btn.dataset.type!;
+    grid.querySelectorAll<HTMLElement>('.card').forEach(card => {
+      card.hidden = type !== 'all' && card.dataset.type !== type;
+    });
+  });
+</script>

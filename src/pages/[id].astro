@@ -1,0 +1,84 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const materials = await getCollection('materials', ({ data }) => !data.draft);
+  return materials.map(item => ({
+    params: { id: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-GB', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+}
+---
+<Base title={`${item.data.title} — Apostolos Tsampodimos`} description={item.data.abstract}>
+  <a href="/" class="back-link">← All materials</a>
+
+  <article>
+    <header class="detail-header">
+      <div class="detail-type-row">
+        <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
+        <span class="card-meta">{formatDate(item.data.date)}</span>
+      </div>
+
+      <h1 class="detail-title">{item.data.title}</h1>
+
+      {item.data.venue && (
+        <p class="detail-venue">{item.data.venue}</p>
+      )}
+    </header>
+
+    {item.data.abstract && (
+      <blockquote class="detail-abstract">{item.data.abstract}</blockquote>
+    )}
+
+    {item.data.tags.length > 0 && (
+      <div class="detail-tags">
+        {item.data.tags.map(tag => <span class="tag">{tag}</span>)}
+      </div>
+    )}
+
+    <div class="detail-resources">
+      {item.data.slides && (
+        <a href={item.data.slides} class="btn btn-primary" target="_blank" rel="noopener">
+          Open slides ↗
+        </a>
+      )}
+      {item.data.pdf && (
+        <a href={item.data.pdf} class="btn" download>
+          Download PDF
+        </a>
+      )}
+    </div>
+
+    {item.data.video && (
+      <video
+        class="video-player"
+        src={item.data.video}
+        controls
+        preload="metadata"
+      />
+    )}
+
+    {item.data.slides && (
+      <iframe
+        class="slides-embed"
+        src={item.data.slides}
+        title={`Slides: ${item.data.title}`}
+        loading="lazy"
+      />
+    )}
+
+    <div class="detail-content">
+      <Content />
+    </div>
+  </article>
+</Base>

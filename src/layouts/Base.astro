@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  currentPage?: string;
+}
+
+const {
+  title,
+  description = 'Research archive — talks, animations, and notes by Apostolos Tsampodimos',
+  currentPage = '',
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="/" class="nav-brand">AT / Research</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link" aria-current={currentPage === 'index' ? 'page' : undefined}>
+          Materials
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main">
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <p>Apostolos Tsampodimos — PhD Physics</p>
+  </footer>
+</body>
+</html>
