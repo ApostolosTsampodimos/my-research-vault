@@ -6,6 +6,8 @@ const allMaterials = await getCollection('materials', ({ data }) => !data.draft)
 
 allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
+const base = import.meta.env.BASE_URL;
+
 const types = ['all', 'talk', 'poster', 'animation', 'lecture', 'paper'] as const;
 
 function formatDate(date: Date) {
@@ -46,7 +48,7 @@ function formatDate(date: Date) {
         </div>
 
         <h2 class="card-title">
-          <a href={`/${item.id}/`}>{item.data.title}</a>
+          <a href={`${base}${item.id}/`}>{item.data.title}</a>
         </h2>
 
         {item.data.venue && (
@@ -64,15 +66,15 @@ function formatDate(date: Date) {
         )}
 
         <div class="card-actions">
-          <a href={`/${item.id}/`} class="btn btn-primary">Details →</a>
+          <a href={`${base}${item.id}/`} class="btn btn-primary">Details →</a>
           {item.data.slides && (
-            <a href={item.data.slides} class="btn" target="_blank" rel="noopener">Slides</a>
+            <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="btn" target="_blank" rel="noopener">Slides</a>
           )}
           {item.data.pdf && (
-            <a href={item.data.pdf} class="btn" download>PDF</a>
+            <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="btn" download>PDF</a>
           )}
           {item.data.video && (
-            <a href={`/${item.id}/`} class="btn">▶ Video</a>
+            <a href={`${base}${item.id}/`} class="btn">▶ Video</a>
           )}
         </div>
       </article>
