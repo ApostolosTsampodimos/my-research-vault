@@ -1,7 +1,27 @@
-# research-archive
+# Research Archive
 
-A browsable archive of research materials — talks, animations, lecture notes, and papers.  
-Built with Astro, deployed to GitHub Pages.
+A personal archive of physics and cosmology research materials — talks, posters, animations, lecture notes, and papers.
+Built with [Astro](https://astro.build) and deployed to GitHub Pages.
+
+**Live site:** https://ApostolosTsampodimos.github.io/research-archive/
+
+## Project structure
+
+```
+src/
+  pages/           # index (grid + filter) and [id] detail pages
+  layouts/         # shared Base layout
+  content/
+    materials/     # Markdown entries (one .md per item)
+  styles/          # global CSS
+public/
+  slides/          # Reveal.js slide decks
+  assets/
+    pdfs/          # Beamer / paper PDFs
+    animations/    # Manim videos
+src-latex/         # LaTeX source files (not served)
+src-manim/         # Manim source files (not served)
+```
 
 ## Adding a new entry
 
@@ -34,18 +54,7 @@ Optional extended notes in Markdown.
 | Manim source | `src-manim/name.py` | not served |
 | LaTeX source | `src-latex/name.tex` | not served |
 
-## Deploy to GitHub Pages
-
-1. Create the GitHub repo and push.
-2. In `astro.config.mjs`, set:
-   ```js
-   site: 'https://YOUR_USERNAME.github.io',
-   base: '/phd-materials',
-   ```
-3. In GitHub → Settings → Pages, set Source to **GitHub Actions**.
-4. Push to `main` — the workflow deploys automatically.
-
-## Dev
+## Local development
 
 ```bash
 npm install
