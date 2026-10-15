@@ -9,7 +9,5 @@ A collection of physics and cosmology research materials by Apostolos Tsampodimo
 - **Talks** — seminar and conference presentations
 - **Posters** — conference poster sessions
 - **Animations** — Manim visualisations of physics concepts
-- **Lecture notes** — course and reading-group notes
-- **Papers** — written work and drafts
 
 Each entry includes slides, PDFs, or videos where available.
