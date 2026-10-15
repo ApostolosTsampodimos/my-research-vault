@@ -8,37 +8,55 @@ allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const base = import.meta.env.BASE_URL;
 
-const types = ['all', 'talk', 'poster', 'animation', 'lecture', 'paper'] as const;
+const types = ['all', 'talk', 'poster', 'animation'] as const;
+
+const counts = {
+  talk: allMaterials.filter(m => m.data.type === 'talk').length,
+  poster: allMaterials.filter(m => m.data.type === 'poster').length,
+  animation: allMaterials.filter(m => m.data.type === 'animation').length,
+};
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
 }
 ---
 <Base title="Research Archive — Apostolos Tsampodimos" currentPage="index">
-  <div class="page-header">
-    <h1 class="page-title">Research Archive</h1>
-    <p class="page-subtitle">Talks, animations, lecture notes, and papers — physics &amp; cosmology.</p>
-  </div>
 
+  <!-- Hero -->
+  <section class="hero">
+    <h1 class="hero-title">Research Archive</h1>
+    <p class="hero-sub">Talks, posters, and animations — physics &amp; cosmology.</p>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-row">
+    <div class="stat">
+      <span class="stat-number">{counts.talk}</span>
+      <span class="stat-label">Talks</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{counts.poster}</span>
+      <span class="stat-label">Posters</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{counts.animation}</span>
+      <span class="stat-label">Animations</span>
+    </div>
+  </section>
+
+  <!-- Filters -->
   <div class="filter-bar" id="filter-bar">
     {types.map(t => (
       <button class:list={['filter-btn', { active: t === 'all' }]} data-type={t}>
         {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
-        {t !== 'all' && (
-          <span class="filter-count">
-            ({allMaterials.filter(m => m.data.type === t).length})
-          </span>
-        )}
-        {t === 'all' && (
-          <span class="filter-count">({allMaterials.length})</span>
-        )}
       </button>
     ))}
   </div>
 
+  <!-- Grid -->
   <div class="materials-grid" id="materials-grid">
     {allMaterials.length === 0 && (
-      <div class="empty-state">No materials yet — add .md files to src/content/materials/</div>
+      <div class="empty-state">No materials yet.</div>
     )}
     {allMaterials.map(item => (
       <article class="card" data-type={item.data.type}>
@@ -66,7 +84,7 @@ function formatDate(date: Date) {
         )}
 
         <div class="card-actions">
-          <a href={`${base}${item.id}/`} class="btn btn-primary">Details →</a>
+          <a href={`${base}${item.id}/`} class="btn btn-primary">Details</a>
           {item.data.slides && (
             <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="btn" target="_blank" rel="noopener">Slides</a>
           )}
@@ -74,12 +92,13 @@ function formatDate(date: Date) {
             <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="btn" download>PDF</a>
           )}
           {item.data.video && (
-            <a href={`${base}${item.id}/`} class="btn">▶ Video</a>
+            <a href={`${base}${item.id}/`} class="btn">Video</a>
           )}
         </div>
       </article>
     ))}
   </div>
+
 </Base>
 
 <script>
