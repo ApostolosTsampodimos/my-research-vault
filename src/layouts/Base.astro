@@ -4,13 +4,11 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
-  currentPage?: string;
 }
 
 const {
   title,
-  description = 'Research archive — talks, animations, and notes by Apostolos Tsampodimos',
-  currentPage = '',
+  description = 'Research archive — talks, animations, and posters by Apostolos Tsampodimos',
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
@@ -24,23 +22,8 @@ const base = import.meta.env.BASE_URL;
   <meta name="description" content={description} />
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav">
-      <a href={base} class="nav-brand">AT / Research</a>
-      <div class="nav-links">
-        <a href={base} class="nav-link" aria-current={currentPage === 'index' ? 'page' : undefined}>
-          Archive
-        </a>
-      </div>
-    </nav>
-  </header>
-
-  <main class="main">
+  <main class="page">
     <slot />
   </main>
-
-  <footer class="site-footer">
-    <p>Apostolos Tsampodimos — PhD Physics</p>
-  </footer>
 </body>
 </html>

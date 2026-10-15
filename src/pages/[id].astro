@@ -22,65 +22,81 @@ function formatDate(date: Date) {
 }
 ---
 <Base title={`${item.data.title} — Apostolos Tsampodimos`} description={item.data.abstract}>
-  <a href={base} class="back-link">← All materials</a>
+  <div class="lander">
 
-  <article>
-    <header class="detail-header">
-      <div class="detail-type-row">
+    <section class="detail-nav">
+      <a href={base}>← Back</a>
+    </section>
+
+    <section class="detail-hero">
+      <div class="detail-meta-row">
         <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
-        <span class="card-meta">{formatDate(item.data.date)}</span>
+        <span class="detail-date">{formatDate(item.data.date)}</span>
       </div>
-
-      <h1 class="detail-title">{item.data.title}</h1>
-
+      <h1>{item.data.title}</h1>
       {item.data.venue && (
         <p class="detail-venue">{item.data.venue}</p>
       )}
-    </header>
+    </section>
 
     {item.data.abstract && (
-      <blockquote class="detail-abstract">{item.data.abstract}</blockquote>
+      <section class="detail-section">
+        <p class="detail-abstract">{item.data.abstract}</p>
+      </section>
     )}
 
     {item.data.tags.length > 0 && (
-      <div class="detail-tags">
+      <section class="detail-section detail-tags">
         {item.data.tags.map(tag => <span class="tag">{tag}</span>)}
-      </div>
+      </section>
     )}
 
-    <div class="detail-resources">
-      {item.data.slides && (
-        <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="btn btn-primary" target="_blank" rel="noopener">
-          Open slides ↗
-        </a>
-      )}
-      {item.data.pdf && (
-        <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="btn" download>
-          Download PDF
-        </a>
-      )}
-    </div>
+    {(item.data.slides || item.data.pdf) && (
+      <section class="detail-actions">
+        {item.data.slides && (
+          <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="action-btn" target="_blank" rel="noopener">
+            Open slides
+          </a>
+        )}
+        {item.data.pdf && (
+          <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="action-btn" download>
+            Download PDF
+          </a>
+        )}
+      </section>
+    )}
 
     {item.data.video && (
-      <video
-        class="video-player"
-        src={`${base}${item.data.video.replace(/^\//, '')}`}
-        controls
-        preload="metadata"
-      />
+      <section class="detail-section">
+        <video
+          class="detail-video"
+          src={`${base}${item.data.video.replace(/^\//, '')}`}
+          controls
+          preload="metadata"
+        />
+      </section>
     )}
 
     {item.data.slides && (
-      <iframe
-        class="slides-embed"
-        src={`${base}${item.data.slides.replace(/^\//, '')}`}
-        title={`Slides: ${item.data.title}`}
-        loading="lazy"
-      />
+      <section class="detail-section">
+        <iframe
+          class="detail-slides"
+          src={`${base}${item.data.slides.replace(/^\//, '')}`}
+          title={`Slides: ${item.data.title}`}
+          loading="lazy"
+        />
+      </section>
     )}
 
-    <div class="detail-content">
+    <section class="detail-content">
       <Content />
-    </div>
-  </article>
+    </section>
+
+    <section class="footer">
+      <div class="footer-col">
+        <span>Apostolos Tsampodimos</span>
+      </div>
+    </section>
+
+  </div>
 </Base>

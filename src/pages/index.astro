@@ -20,85 +20,67 @@ function formatDate(date: Date) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
 }
 ---
-<Base title="Research Archive — Apostolos Tsampodimos" currentPage="index">
+<Base title="My Archive — Apostolos Tsampodimos">
+  <div class="lander">
 
-  <!-- Hero -->
-  <section class="hero">
-    <h1 class="hero-title">Research Archive</h1>
-    <p class="hero-sub">Talks, posters, and animations — physics &amp; cosmology.</p>
-  </section>
+    <section class="hero">
+      <h1>My Archive</h1>
+      <p>Talks, posters and animations.</p>
+    </section>
 
-  <!-- Stats -->
-  <section class="stats-row">
-    <div class="stat">
-      <span class="stat-number">{counts.talk}</span>
-      <span class="stat-label">Talks</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">{counts.poster}</span>
-      <span class="stat-label">Posters</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">{counts.animation}</span>
-      <span class="stat-label">Animations</span>
-    </div>
-  </section>
+    <section class="stats">
+      <div class="stat">
+        <span class="stat-number">{counts.talk}</span>
+        <span class="stat-label">Talks</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">{counts.poster}</span>
+        <span class="stat-label">Posters</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">{counts.animation}</span>
+        <span class="stat-label">Animations</span>
+      </div>
+    </section>
 
-  <!-- Filters -->
-  <div class="filter-bar" id="filter-bar">
-    {types.map(t => (
-      <button class:list={['filter-btn', { active: t === 'all' }]} data-type={t}>
-        {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
-      </button>
-    ))}
-  </div>
+    <section class="filters" id="filter-bar">
+      {types.map(t => (
+        <button class:list={['filter-btn', { active: t === 'all' }]} data-type={t}>
+          {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
+        </button>
+      ))}
+    </section>
 
-  <!-- Grid -->
-  <div class="materials-grid" id="materials-grid">
-    {allMaterials.length === 0 && (
-      <div class="empty-state">No materials yet.</div>
-    )}
-    {allMaterials.map(item => (
-      <article class="card" data-type={item.data.type}>
-        <div class="card-top">
-          <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
-          <span class="card-meta">{formatDate(item.data.date)}</span>
-        </div>
-
-        <h2 class="card-title">
-          <a href={`${base}${item.id}/`}>{item.data.title}</a>
-        </h2>
-
-        {item.data.venue && (
-          <p class="card-meta">{item.data.venue}</p>
-        )}
-
-        {item.data.abstract && (
-          <p class="card-abstract">{item.data.abstract}</p>
-        )}
-
-        {item.data.tags.length > 0 && (
-          <div class="card-tags">
-            {item.data.tags.map(tag => <span class="tag">{tag}</span>)}
+    <div class="materials" id="materials-grid">
+      {allMaterials.length === 0 && (
+        <div class="empty">No materials yet.</div>
+      )}
+      {allMaterials.map(item => (
+        <a class="material" data-type={item.data.type} href={`${base}${item.id}/`}>
+          <div class="material-main">
+            <span class="material-title">{item.data.title}</span>
+            {item.data.venue && (
+              <span class="material-venue">{item.data.venue}</span>
+            )}
+            {item.data.abstract && (
+              <span class="material-abstract">{item.data.abstract}</span>
+            )}
           </div>
-        )}
+          <div class="material-meta">
+            <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
+            <span class="material-date">{formatDate(item.data.date)}</span>
+          </div>
+        </a>
+      ))}
+    </div>
 
-        <div class="card-actions">
-          <a href={`${base}${item.id}/`} class="btn btn-primary">Details</a>
-          {item.data.slides && (
-            <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="btn" target="_blank" rel="noopener">Slides</a>
-          )}
-          {item.data.pdf && (
-            <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="btn" download>PDF</a>
-          )}
-          {item.data.video && (
-            <a href={`${base}${item.id}/`} class="btn">Video</a>
-          )}
-        </div>
-      </article>
-    ))}
+    <section class="footer">
+      <div class="footer-col">
+        <span>Apostolos Tsampodimos</span>
+      </div>
+    </section>
+
   </div>
-
 </Base>
 
 <script>
@@ -113,8 +95,8 @@ function formatDate(date: Date) {
     btn.classList.add('active');
 
     const type = btn.dataset.type!;
-    grid.querySelectorAll<HTMLElement>('.card').forEach(card => {
-      card.hidden = type !== 'all' && card.dataset.type !== type;
+    grid.querySelectorAll<HTMLElement>('.material').forEach(item => {
+      item.hidden = type !== 'all' && item.dataset.type !== type;
     });
   });
 </script>
