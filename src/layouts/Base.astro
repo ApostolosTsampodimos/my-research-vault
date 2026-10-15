@@ -20,6 +20,66 @@ const {
   <meta name="description" content={description} />
 </head>
 <body>
+  <canvas id="rain" style="position:absolute;top:0;left:0;width:100%;z-index:-1;pointer-events:none;"></canvas>
   <slot />
+  <script is:inline>
+    (function() {
+      var c = document.getElementById('rain');
+      var ctx = c.getContext('2d');
+      var drops = [];
+
+      function resize() {
+        c.width = window.innerWidth;
+        c.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+        drops = [];
+        var count = Math.floor(c.width / 4);
+        for (var i = 0; i < count; i++) {
+          drops.push(makeDrop(true));
+        }
+      }
+
+      function makeDrop(randomY) {
+        return {
+          x: -200 + Math.random() * (c.width + 200),
+          y: randomY ? Math.random() * c.height : -Math.random() * 100,
+          len: 20 + Math.random() * 60,
+          speed: 3 + Math.random() * 5,
+          opacity: 0.25 + Math.random() * 0.75,
+          w: 0.5 + Math.random() * 1
+        };
+      }
+
+      function draw() {
+        var fullH = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, window.innerHeight);
+        if (c.height !== fullH) {
+          c.height = fullH;
+        }
+        ctx.clearRect(0, 0, c.width, c.height);
+        for (var i = 0; i < drops.length; i++) {
+          var d = drops[i];
+          var grad = ctx.createLinearGradient(d.x, d.y, d.x, d.y + d.len);
+          grad.addColorStop(0, 'hsla(350,40%,55%,0)');
+          grad.addColorStop(0.4, 'hsla(350,40%,55%,' + d.opacity + ')');
+          grad.addColorStop(1, 'hsla(350,40%,55%,' + (d.opacity * 0.3) + ')');
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x + d.len * 0.15, d.y + d.len);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = d.w;
+          ctx.stroke();
+          d.x += d.speed * 0.15;
+          d.y += d.speed;
+          if (d.y > c.height + d.len) {
+            drops[i] = makeDrop(false);
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+      draw();
+    })();
+  </script>
 </body>
 </html>
