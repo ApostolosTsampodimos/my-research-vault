@@ -3,11 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
 const allMaterials = await getCollection('materials', ({ data }) => !data.draft);
-
 allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const base = import.meta.env.BASE_URL;
-
 const types = ['all', 'talk', 'poster', 'animation'] as const;
 
 const counts = {
@@ -17,70 +15,125 @@ const counts = {
 };
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
+  return date.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 ---
-<Base title="My Archive — Apostolos Tsampodimos">
-  <div class="lander">
+<Base title="Research Archive — Apostolos Tsampodimos">
+  <main data-page="archive">
+    <div data-component="container">
+      <header data-component="top">
+        <a href={base} data-slot="logo">research-archive</a>
+        <nav>
+          <ul>
+            <li><a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </nav>
+      </header>
 
-    <section class="hero">
-      <h1>My Archive</h1>
-      <p>Talks, posters and animations.</p>
-    </section>
-
-    <section class="stats">
-      <div class="stat">
-        <span class="stat-number">{counts.talk}</span>
-        <span class="stat-label">Talks</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">{counts.poster}</span>
-        <span class="stat-label">Posters</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">{counts.animation}</span>
-        <span class="stat-label">Animations</span>
-      </div>
-    </section>
-
-    <section class="filters" id="filter-bar">
-      {types.map(t => (
-        <button class:list={['filter-btn', { active: t === 'all' }]} data-type={t}>
-          {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
-        </button>
-      ))}
-    </section>
-
-    <div class="materials" id="materials-grid">
-      {allMaterials.length === 0 && (
-        <div class="empty">No materials yet.</div>
-      )}
-      {allMaterials.map(item => (
-        <a class="material" data-type={item.data.type} href={`${base}${item.id}/`}>
-          <div class="material-main">
-            <span class="material-title">{item.data.title}</span>
-            {item.data.venue && (
-              <span class="material-venue">{item.data.venue}</span>
-            )}
-            {item.data.abstract && (
-              <span class="material-abstract">{item.data.abstract}</span>
-            )}
+      <div data-component="content">
+        <section data-component="hero">
+          <div data-slot="hero-copy">
+            <h1>Research Archive</h1>
+            <p>Talks, posters and animations from my work in physics.</p>
           </div>
-          <div class="material-meta">
-            <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
-            <span class="material-date">{formatDate(item.data.date)}</span>
+        </section>
+
+        <section data-component="what">
+          <div data-slot="section-title">
+            <h3>What's inside</h3>
+            <p>A collection of academic materials from conferences, seminars, and research projects.</p>
           </div>
-        </a>
-      ))}
+          <ul>
+            <li>
+              <span>[*]</span>
+              <div>
+                <strong>Talks</strong> Conference and seminar presentations with slides and extended notes.
+              </div>
+            </li>
+            <li>
+              <span>[*]</span>
+              <div>
+                <strong>Posters</strong> Research posters presented at workshops and conferences.
+              </div>
+            </li>
+            <li>
+              <span>[*]</span>
+              <div>
+                <strong>Animations</strong> Physics visualizations created with Manim.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section data-component="stats">
+          <div data-component="stat">
+            <span data-slot="stat-number">{counts.talk}</span>
+            <span data-slot="stat-label">Talks</span>
+          </div>
+          <div data-component="stat">
+            <span data-slot="stat-number">{counts.poster}</span>
+            <span data-slot="stat-label">Posters</span>
+          </div>
+          <div data-component="stat">
+            <span data-slot="stat-number">{counts.animation}</span>
+            <span data-slot="stat-label">Animations</span>
+          </div>
+        </section>
+
+        <section data-component="filters" id="filter-bar">
+          {types.map(t => (
+            <button
+              class:list={[{ active: t === 'all' }]}
+              data-slot="filter-btn"
+              data-type={t}
+            >
+              {t === 'all' ? 'All' : t}
+            </button>
+          ))}
+        </section>
+
+        <div data-component="materials" id="materials-grid">
+          {allMaterials.length === 0 && (
+            <div data-slot="empty">No materials yet.</div>
+          )}
+          {allMaterials.map(item => (
+            <a data-component="material" data-type={item.data.type} href={`${base}${item.id}/`}>
+              <div data-slot="material-main">
+                <span data-slot="material-title">{item.data.title}</span>
+                {item.data.venue && (
+                  <span data-slot="material-venue">{item.data.venue}</span>
+                )}
+                {item.data.abstract && (
+                  <span data-slot="material-abstract">{item.data.abstract}</span>
+                )}
+              </div>
+              <div data-slot="material-meta">
+                <span data-slot="type-badge" data-type={item.data.type}>{item.data.type}</span>
+                <span data-slot="material-date">{formatDate(item.data.date)}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <footer data-component="footer">
+          <div data-slot="cell">
+            <a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">
+              GitHub
+            </a>
+          </div>
+          <div data-slot="cell">
+            <a href={base}>
+              Apostolos Tsampodimos
+            </a>
+          </div>
+        </footer>
+      </div>
     </div>
 
-    <section class="footer">
-      <div class="footer-col">
-        <span>Apostolos Tsampodimos</span>
-      </div>
-    </section>
-
-  </div>
+    <div data-component="legal">
+      <span>&copy; 2026 Apostolos Tsampodimos</span>
+    </div>
+  </main>
 </Base>
 
 <script>
@@ -88,14 +141,14 @@ function formatDate(date: Date) {
   const grid = document.getElementById('materials-grid')!;
 
   bar.addEventListener('click', (e) => {
-    const btn = (e.target as Element).closest<HTMLButtonElement>('.filter-btn');
+    const btn = (e.target as Element).closest<HTMLButtonElement>('[data-slot="filter-btn"]');
     if (!btn) return;
 
-    bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    bar.querySelectorAll('[data-slot="filter-btn"]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
     const type = btn.dataset.type!;
-    grid.querySelectorAll<HTMLElement>('.material').forEach(item => {
+    grid.querySelectorAll<HTMLElement>('[data-component="material"]').forEach(item => {
       item.hidden = type !== 'all' && item.dataset.type !== type;
     });
   });

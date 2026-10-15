@@ -16,87 +16,118 @@ const { Content } = await render(item);
 const base = import.meta.env.BASE_URL;
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString('en-GB', {
+  return date.toLocaleDateString('en', {
     year: 'numeric', month: 'long', day: 'numeric',
   });
 }
 ---
 <Base title={`${item.data.title} — Apostolos Tsampodimos`} description={item.data.abstract}>
-  <div class="lander">
+  <main data-page="detail">
+    <div data-component="container">
+      <header data-component="top">
+        <a href={base} data-slot="logo">research-archive</a>
+        <nav>
+          <ul>
+            <li><a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </nav>
+      </header>
 
-    <section class="detail-nav">
-      <a href={base}>← Back</a>
-    </section>
+      <div data-component="content">
+        <div data-component="detail-nav">
+          <a href={base}>&larr; Back</a>
+        </div>
 
-    <section class="detail-hero">
-      <div class="detail-meta-row">
-        <span class="type-badge" data-type={item.data.type}>{item.data.type}</span>
-        <span class="detail-date">{formatDate(item.data.date)}</span>
-      </div>
-      <h1>{item.data.title}</h1>
-      {item.data.venue && (
-        <p class="detail-venue">{item.data.venue}</p>
-      )}
-    </section>
+        <section data-component="detail-hero">
+          <div data-slot="detail-meta-row">
+            <span data-slot="type-badge" data-type={item.data.type}>{item.data.type}</span>
+            <span data-slot="detail-date">{formatDate(item.data.date)}</span>
+          </div>
+          <h1>{item.data.title}</h1>
+          {item.data.venue && (
+            <p data-slot="detail-venue">{item.data.venue}</p>
+          )}
+        </section>
 
-    {item.data.abstract && (
-      <section class="detail-section">
-        <p class="detail-abstract">{item.data.abstract}</p>
-      </section>
-    )}
+        {item.data.abstract && (
+          <section data-component="detail-section">
+            <p data-slot="detail-abstract">{item.data.abstract}</p>
+          </section>
+        )}
 
-    {item.data.tags.length > 0 && (
-      <section class="detail-section detail-tags">
-        {item.data.tags.map(tag => <span class="tag">{tag}</span>)}
-      </section>
-    )}
+        {item.data.tags.length > 0 && (
+          <section data-component="detail-section">
+            <div data-component="detail-tags">
+              {item.data.tags.map(tag => <span data-slot="tag">{tag}</span>)}
+            </div>
+          </section>
+        )}
 
-    {(item.data.slides || item.data.pdf) && (
-      <section class="detail-actions">
+        {(item.data.slides || item.data.pdf) && (
+          <section data-component="detail-actions">
+            {item.data.slides && (
+              <a
+                href={`${base}${item.data.slides.replace(/^\//, '')}`}
+                data-slot="action-btn"
+                target="_blank"
+                rel="noopener"
+              >
+                Open slides
+              </a>
+            )}
+            {item.data.pdf && (
+              <a
+                href={`${base}${item.data.pdf.replace(/^\//, '')}`}
+                data-slot="action-btn"
+                download
+              >
+                Download PDF
+              </a>
+            )}
+          </section>
+        )}
+
+        {item.data.video && (
+          <section data-component="detail-video">
+            <video
+              src={`${base}${item.data.video.replace(/^\//, '')}`}
+              controls
+              preload="metadata"
+            />
+          </section>
+        )}
+
         {item.data.slides && (
-          <a href={`${base}${item.data.slides.replace(/^\//, '')}`} class="action-btn" target="_blank" rel="noopener">
-            Open slides
-          </a>
+          <section data-component="detail-slides">
+            <iframe
+              src={`${base}${item.data.slides.replace(/^\//, '')}`}
+              title={`Slides: ${item.data.title}`}
+              loading="lazy"
+            />
+          </section>
         )}
-        {item.data.pdf && (
-          <a href={`${base}${item.data.pdf.replace(/^\//, '')}`} class="action-btn" download>
-            Download PDF
-          </a>
-        )}
-      </section>
-    )}
 
-    {item.data.video && (
-      <section class="detail-section">
-        <video
-          class="detail-video"
-          src={`${base}${item.data.video.replace(/^\//, '')}`}
-          controls
-          preload="metadata"
-        />
-      </section>
-    )}
+        <section data-component="detail-content">
+          <Content />
+        </section>
 
-    {item.data.slides && (
-      <section class="detail-section">
-        <iframe
-          class="detail-slides"
-          src={`${base}${item.data.slides.replace(/^\//, '')}`}
-          title={`Slides: ${item.data.title}`}
-          loading="lazy"
-        />
-      </section>
-    )}
-
-    <section class="detail-content">
-      <Content />
-    </section>
-
-    <section class="footer">
-      <div class="footer-col">
-        <span>Apostolos Tsampodimos</span>
+        <footer data-component="footer">
+          <div data-slot="cell">
+            <a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">
+              GitHub
+            </a>
+          </div>
+          <div data-slot="cell">
+            <a href={base}>
+              Apostolos Tsampodimos
+            </a>
+          </div>
+        </footer>
       </div>
-    </section>
+    </div>
 
-  </div>
+    <div data-component="legal">
+      <span>&copy; 2026 Apostolos Tsampodimos</span>
+    </div>
+  </main>
 </Base>
