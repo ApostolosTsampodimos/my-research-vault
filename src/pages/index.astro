@@ -31,16 +31,8 @@ function formatDate(date: Date) {
           </div>
           <div data-slot="hero-copy">
             <h1>My Research Vault</h1>
-            <p>Talks, posters and animations from my work in physics.</p>
           </div>
-        </section>
-
-        <section data-component="what">
-          <div data-slot="section-title">
-            <h3>What's inside</h3>
-            <p>A collection of academic materials from conferences, seminars, and research projects.</p>
-          </div>
-          <ul>
+          <ul data-slot="hero-list">
             <li>
               <span>─</span>
               <div>
@@ -71,7 +63,7 @@ function formatDate(date: Date) {
                 data-slot="filter-btn"
                 data-type={t}
               >
-                {t === 'all' ? 'All' : t} <span data-slot="filter-count">{count}</span>
+                <span data-slot="filter-label">{t === 'all' ? 'All' : t} <span data-slot="filter-count">{count}</span></span>
               </button>
             );
           })}
@@ -113,13 +105,46 @@ function formatDate(date: Date) {
 <script>
   const bar = document.getElementById('filter-bar')!;
   const grid = document.getElementById('materials-grid')!;
+  const btns = Array.from(bar.querySelectorAll<HTMLButtonElement>('[data-slot="filter-btn"]'));
+  const DURATION = 450;
+
+  function cleanWireClasses(el: Element) {
+    el.classList.remove('wire-fill-right', 'wire-fill-left', 'wire-drain-right', 'wire-drain-left', 'wire-on', 'wire-out');
+  }
 
   bar.addEventListener('click', (e) => {
     const btn = (e.target as Element).closest<HTMLButtonElement>('[data-slot="filter-btn"]');
-    if (!btn) return;
+    if (!btn || btn.classList.contains('active')) return;
 
-    bar.querySelectorAll('[data-slot="filter-btn"]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    const prev = bar.querySelector('[data-slot="filter-btn"].active') as HTMLButtonElement | null;
+
+    if (prev) {
+      const prevIdx = btns.indexOf(prev);
+      const nextIdx = btns.indexOf(btn);
+      const goingRight = nextIdx > prevIdx;
+
+      // Drain old button
+      prev.classList.remove('active');
+      cleanWireClasses(prev);
+      prev.classList.add(goingRight ? 'wire-drain-right' : 'wire-drain-left');
+      requestAnimationFrame(() => prev.classList.add('wire-out'));
+
+      // Fill new button
+      cleanWireClasses(btn);
+      btn.classList.add(goingRight ? 'wire-fill-right' : 'wire-fill-left');
+      requestAnimationFrame(() => {
+        btn.classList.add('wire-on');
+        btn.classList.add('active');
+      });
+
+      // Clean up after animation
+      setTimeout(() => {
+        cleanWireClasses(prev);
+        cleanWireClasses(btn);
+      }, DURATION);
+    } else {
+      btn.classList.add('active');
+    }
 
     const type = btn.dataset.type!;
     grid.querySelectorAll<HTMLElement>('[data-component="material"]').forEach(item => {

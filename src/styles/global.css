@@ -258,7 +258,7 @@ body::after {
   font-size: 38px;
   color: var(--color-text-strong);
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   line-height: 1.2;
   animation: flicker 6s infinite;
 }
@@ -269,61 +269,11 @@ body::after {
   }
 }
 
-[data-slot="hero-copy"] p {
-  color: var(--color-text);
-  max-width: 82%;
-}
-
-@media (max-width: 50rem) {
-  [data-slot="hero-copy"] p {
-    max-width: 100%;
-  }
-}
-
-/* ── "What's inside" section ───────────────────────────────── */
-[data-component="what"] {
-  border-top: 2.5px solid var(--color-border-weak);
-  padding: var(--vertical-padding) var(--padding);
-}
-
-[data-slot="section-title"] {
-  margin-bottom: 24px;
-}
-
-[data-slot="section-title"] h3 {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-weaker);
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 0.75em;
-}
-
-[data-slot="section-title"] h3::before {
-  content: '──';
-  flex-shrink: 0;
-}
-
-[data-slot="section-title"] h3::after {
-  content: '';
-  flex: 1;
-  border-top: 2.5px solid var(--color-border-weak);
-}
-
-[data-slot="section-title"] p {
-  color: var(--color-text);
-  margin-bottom: 12px;
-}
-
-[data-component="what"] ul {
+[data-slot="hero-list"] {
   padding: 0;
 }
 
-[data-component="what"] li {
+[data-slot="hero-list"] li {
   list-style: none;
   margin-bottom: 16px;
   display: flex;
@@ -332,22 +282,22 @@ body::after {
 }
 
 @media (max-width: 60rem) {
-  [data-component="what"] li {
+  [data-slot="hero-list"] li {
     line-height: 180%;
   }
 }
 
-[data-component="what"] li > span {
+[data-slot="hero-list"] li > span {
   color: var(--color-icon);
 }
 
-[data-component="what"] li strong {
+[data-slot="hero-list"] li strong {
   font-weight: 500;
   color: var(--color-text-strong);
   margin-right: 12px;
 }
 
-[data-component="what"] li:last-child {
+[data-slot="hero-list"] li:last-child {
   margin-bottom: 0;
 }
 
@@ -355,51 +305,97 @@ body::after {
 [data-component="filters"] {
   border-top: 2.5px solid var(--color-border-weak);
   display: flex;
-  gap: 40px;
-  align-items: center;
-  background: var(--color-background-weak);
-  padding: 0 20px;
+  gap: 12px;
+  align-items: stretch;
+  padding: 14px var(--padding);
 }
 
 @media (max-width: 60rem) {
   [data-component="filters"] {
-    gap: 32px;
     overflow-x: auto;
+    gap: 8px;
   }
 }
 
 [data-slot="filter-btn"] {
   appearance: none;
-  background: transparent;
-  border: 0;
-  padding: 16px 0;
+  background: var(--color-background-weak);
+  border: 2.5px solid var(--color-border-weak);
+  padding: 14px 0;
   margin: 0;
   cursor: pointer;
-  color: var(--color-text-weak);
-  font-family: var(--font-mono);
-  font-size: inherit;
+  color: var(--color-text-weaker);
+  font-family: 'Russo One', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   line-height: 1;
-  border-bottom: 2px solid transparent;
   white-space: nowrap;
+  flex: 1;
+  text-align: center;
+  position: relative;
+  clip-path: polygon(
+    10px 0%, 100% 0%, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0% 100%, 0% 10px
+  );
+  transition: color 0.3s, text-shadow 0.3s;
 }
 
-[data-slot="filter-btn"].active {
-  color: var(--color-text-strong);
-  border-bottom-color: var(--color-background-strong);
+[data-slot="filter-btn"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2.5px solid #ff1177;
+  pointer-events: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.45s ease;
 }
 
 [data-slot="filter-btn"]:hover {
-  color: var(--color-text-strong);
+  color: #ff1177;
+  text-shadow:
+    0 0 7px #ff1177,
+    0 0 15px #ff1177,
+    0 0 30px #ff1177;
 }
+
+[data-slot="filter-btn"].active {
+  color: #ff1177;
+  text-shadow:
+    0 0 7px #ff1177,
+    0 0 10px #ff1177,
+    0 0 21px #ff1177,
+    0 0 42px #ff1177;
+  animation: neon-flicker 4s infinite;
+}
+
+[data-slot="filter-btn"].active::before {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Direction classes for wire animation */
+[data-slot="filter-btn"].wire-fill-right::before { clip-path: inset(0 100% 0 0); }
+[data-slot="filter-btn"].wire-fill-right.wire-on::before { clip-path: inset(0 0 0 0); }
+
+[data-slot="filter-btn"].wire-fill-left::before { clip-path: inset(0 0 0 100%); }
+[data-slot="filter-btn"].wire-fill-left.wire-on::before { clip-path: inset(0 0 0 0); }
+
+[data-slot="filter-btn"].wire-drain-right::before { clip-path: inset(0 0 0 0); }
+[data-slot="filter-btn"].wire-drain-right.wire-out::before { clip-path: inset(0 0 0 100%); }
+
+[data-slot="filter-btn"].wire-drain-left::before { clip-path: inset(0 0 0 0); }
+[data-slot="filter-btn"].wire-drain-left.wire-out::before { clip-path: inset(0 100% 0 0); }
 
 [data-slot="filter-count"] {
   color: var(--color-text-weaker);
   font-size: 0.85em;
-  margin-left: 0.15em;
+  margin-left: 0.3em;
+  font-family: var(--font-mono);
+  letter-spacing: 0;
 }
 
 [data-slot="filter-btn"].active [data-slot="filter-count"] {
-  color: var(--color-text-weak);
+  color: hsla(340, 100%, 60%, 0.5);
 }
 
 /* ── Materials list ────────────────────────────────────────── */
@@ -436,7 +432,7 @@ body::after {
   display: none;
 }
 
-[data-component="material"] + [data-component="material"]:not([hidden]) {
+[data-component="material"]:not([hidden]) ~ [data-component="material"]:not([hidden]) {
   border-top: 2.5px solid var(--color-border-weak);
 }
 
