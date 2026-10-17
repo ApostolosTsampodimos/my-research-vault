@@ -76,14 +76,25 @@ function formatDate(date: Date) {
               </button>
             );
           })}
+          <label data-slot="search">
+            <span class="visually-hidden">Search materials</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+            <input id="search" type="search" placeholder="Search titles, venues, tags…" autocomplete="off" />
+          </label>
         </section>
 
         <div data-component="materials" id="materials-grid">
           {allMaterials.length === 0 && (
             <div data-slot="empty">No materials yet.</div>
           )}
+          <div data-slot="empty" id="no-matches" hidden>Nothing matches that search.</div>
           {allMaterials.map(item => (
-            <a data-component="material" data-type={item.data.type} href={`${base}/${item.id}/`}>
+            <a
+              data-component="material"
+              data-type={item.data.type}
+              data-search={[item.data.title, item.data.venue, item.data.abstract, ...item.data.tags].filter(Boolean).join(' ').toLowerCase()}
+              href={`${base}/${item.id}/`}
+            >
               <div data-slot="material-thumb" data-type={item.data.type}>
                 {item.data.thumbnail ? (
                   <img src={`${base}/${item.data.thumbnail.replace(/^\//, '')}`} alt="" />
@@ -157,9 +168,27 @@ function formatDate(date: Date) {
       btn.classList.add('active');
     }
 
-    const type = btn.dataset.type!;
-    grid.querySelectorAll<HTMLElement>('[data-component="material"]').forEach(item => {
-      item.hidden = type !== 'all' && item.dataset.type !== type;
-    });
+    activeType = btn.dataset.type!;
+    applyFilters();
   });
+
+  // Type filter and search combine: an item shows only if it passes both
+  let activeType = 'all';
+  const search = document.getElementById('search') as HTMLInputElement;
+  const noMatches = document.getElementById('no-matches')!;
+
+  function applyFilters() {
+    const terms = search.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let shown = 0;
+    grid.querySelectorAll<HTMLElement>('[data-component="material"]').forEach(item => {
+      const typeOk = activeType === 'all' || item.dataset.type === activeType;
+      const text = item.dataset.search ?? '';
+      const searchOk = terms.every(t => text.includes(t));
+      item.hidden = !(typeOk && searchOk);
+      if (!item.hidden) shown++;
+    });
+    noMatches.hidden = shown > 0;
+  }
+
+  search.addEventListener('input', applyFilters);
 </script>

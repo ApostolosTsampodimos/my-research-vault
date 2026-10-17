@@ -150,15 +150,53 @@ body::after {
   overflow: hidden;
 }
 
-/* The photo, pushed back: dimmed, softened, scaled so blur edges stay offscreen */
-#backdrop::before {
-  content: '';
+/* The photo, pushed back: dimmed, softened, oversized by 8% so blur edges stay offscreen */
+[data-slot="backdrop-scene"] {
+  --scene-filter: blur(2.5px) brightness(0.65) saturate(1) contrast(1.05);
+  /* cover maths for the square photo, so overlays can be pinned to spots in it */
+  --d: max(108vw, 108vh);
+  --ox: calc((108vw - var(--d)) * 0.5);
+  --oy: calc((108vh - var(--d)) * 0.72);
   position: absolute;
-  inset: -4%;
+  left: -4vw;
+  top: -4vh;
+  width: 108vw;
+  height: 108vh;
   background: url('../assets/backdrop-house.jpg') center 72% / cover no-repeat;
-  filter: blur(2.5px) brightness(0.65) saturate(1) contrast(1.05);
+  filter: var(--scene-filter);
   transform: translateY(var(--parallax)) scale(1.04);
   will-change: transform;
+}
+
+/* Warm light in the house windows; brightens while an item is hovered.
+   --fx/--fy are the window centres as fractions of the photo. */
+[data-slot="window-glow"] {
+  position: absolute;
+  left: calc(var(--ox) + var(--fx) * var(--d));
+  top: calc(var(--oy) + var(--fy) * var(--d));
+  width: calc(var(--d) * 0.07);
+  height: calc(var(--d) * 0.06);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, hsla(38, 100%, 70%, 0.9), hsla(30, 100%, 55%, 0.35) 55%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+body:has([data-component="material"]:hover) [data-slot="window-glow"] {
+  opacity: 1;
+}
+
+/* Lightning: the far scene and its reflection flare twice, then settle */
+@keyframes lightning-scene {
+  0%, 30%, 100% { filter: var(--scene-filter); }
+  3%  { filter: blur(2.5px) brightness(1.7) saturate(0.8) contrast(1.1); }
+  7%  { filter: var(--scene-filter); }
+  11% { filter: blur(2.5px) brightness(1.35) saturate(0.85) contrast(1.1); }
+}
+
+.lightning [data-slot="backdrop-scene"] {
+  animation: lightning-scene 1.4s ease-out;
 }
 
 /* Atmosphere: fade into the theme background at the edges, vignette the sides */
@@ -349,6 +387,7 @@ body::after {
 [data-component="filters"] {
   border-top: 2.5px solid var(--color-border-weak);
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   align-items: stretch;
   padding: 16px var(--padding);
@@ -489,6 +528,70 @@ body::after {
 [data-slot="filter-btn"].wire-drain-right::before { -webkit-mask-position: right; mask-position: right; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
 [data-slot="filter-btn"].wire-drain-left::before  { -webkit-mask-position: left;  mask-position: left;  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
 [data-slot="filter-btn"].wire-out::before         { -webkit-mask-size: 0% 100%;   mask-size: 0% 100%; }
+
+/* Search: a full-width plate under the filters; the frame lights up on focus */
+[data-slot="search"] {
+  --c: 10px;
+  flex-basis: 100%;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 2.5px;
+  padding-left: 1rem;
+  position: relative;
+  isolation: isolate;
+  background: var(--color-border-weak);
+  color: var(--color-text-weak);
+  clip-path: polygon(
+    var(--c) 0%, 100% 0%, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0% 100%, 0% var(--c)
+  );
+  transition: background 0.3s, color 0.3s;
+}
+
+[data-slot="search"]::before {
+  --c: 8.5px;
+  content: '';
+  position: absolute;
+  inset: 2.5px;
+  z-index: -1;
+  background: var(--color-background-weak);
+  clip-path: polygon(
+    var(--c) 0%, 100% 0%, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0% 100%, 0% var(--c)
+  );
+}
+
+[data-slot="search"]:focus-within {
+  background: #ff1177;
+  color: #ff1177;
+}
+
+[data-slot="search"] input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem 0.75rem 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-strong);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+[data-slot="search"] input::placeholder {
+  color: var(--color-text-weak);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* Count sits in a small inset tag */
 [data-slot="filter-count"] {
@@ -867,6 +970,17 @@ body::after {
   animation: ground-shimmer 7s ease-in-out infinite alternate;
 }
 
+@keyframes lightning-water {
+  0%, 30%, 100% { filter: none; }
+  3%  { filter: brightness(2.2); }
+  7%  { filter: none; }
+  11% { filter: brightness(1.7); }
+}
+
+.lightning [data-slot="ground-water"] {
+  animation: lightning-water 1.4s ease-out;
+}
+
 @keyframes ground-shimmer {
   from { transform: scaleY(-1) translateX(0); }
   to   { transform: scaleY(-1.03) translateX(-1%); }
@@ -1195,3 +1309,4 @@ body::after {
 [data-component="detail-content"] a {
   color: var(--color-text-strong);
 }
+

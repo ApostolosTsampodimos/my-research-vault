@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import previewImage from '../assets/backdrop-house.jpg';
 
 interface Props {
   title: string;
@@ -12,6 +13,8 @@ const {
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pageUrl = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(previewImage.src, Astro.site);
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -20,9 +23,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <!-- Link previews (Open Graph / Twitter) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="My Research Vault" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={pageUrl} />
+  <meta property="og:image" content={imageUrl} />
+  <meta name="twitter:card" content="summary_large_image" />
 </head>
 <body>
-  <div id="backdrop" aria-hidden="true"></div>
+  <div id="backdrop" aria-hidden="true">
+    <div data-slot="backdrop-scene">
+      <span data-slot="window-glow" style="--fx:0.430;--fy:0.700"></span>
+      <span data-slot="window-glow" style="--fx:0.564;--fy:0.700"></span>
+      <span data-slot="window-glow" style="--fx:0.500;--fy:0.627"></span>
+    </div>
+  </div>
   <!-- Far rain falls behind the panel; near rain and splashes fall in front of everything -->
   <canvas id="rain-back" data-slot="rain" style="z-index:-1;" aria-hidden="true"></canvas>
   <canvas id="rain-front" data-slot="rain" style="z-index:40;" aria-hidden="true"></canvas>
@@ -218,11 +235,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         requestAnimationFrame(draw);
       }
 
+      // Lightning: a flash every 30-90 s while it rains (CSS animates the .lightning class)
+      var lightningTimer = null;
+      var root = document.documentElement;
+
+      function scheduleLightning() {
+        lightningTimer = setTimeout(function() {
+          root.classList.add('lightning');
+          setTimeout(function() { root.classList.remove('lightning'); }, 1400);
+          scheduleLightning();
+        }, 30000 + Math.random() * 60000);
+      }
+
       function start() {
         if (running) return;
         running = true;
         resize();
         requestAnimationFrame(draw);
+        scheduleLightning();
       }
 
       function stop() {
@@ -230,12 +260,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         splashes = [];
         bctx.clearRect(0, 0, W, H);
         fctx.clearRect(0, 0, W, H);
+        clearTimeout(lightningTimer);
+        root.classList.remove('lightning');
       }
 
       function setRain(on, remember) {
         if (on) start(); else stop();
         toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-        document.documentElement.classList.toggle('rain-off', !on);
+        root.classList.toggle('rain-off', !on);
         if (remember) {
           try { localStorage.setItem('rain', on ? 'on' : 'off'); } catch (e) {}
         }
