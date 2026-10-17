@@ -7,9 +7,10 @@ const allMaterials = await getCollection('materials', ({ data }) => !data.draft)
 allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const types = ['all', 'talk', 'poster', 'animation'] as const;
+const types = ['all', 'paper', 'talk', 'poster', 'animation'] as const;
 
 const counts = {
+  paper: allMaterials.filter(m => m.data.type === 'paper').length,
   talk: allMaterials.filter(m => m.data.type === 'talk').length,
   poster: allMaterials.filter(m => m.data.type === 'poster').length,
   animation: allMaterials.filter(m => m.data.type === 'animation').length,
@@ -17,6 +18,7 @@ const counts = {
 
 // Stand-in artwork for items without a thumbnail
 const thumbIcons: Record<string, string> = {
+  paper: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 15h7M9 18h4"/>',
   talk: '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M12 16v4M8 20h8"/>',
   poster: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 7h8M8 11h8M8 15h5"/>',
   animation: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/>',
@@ -41,6 +43,12 @@ function formatDate(date: Date) {
             <h1>My Research Vault</h1>
           </div>
           <ul data-slot="hero-list">
+            <li>
+              <span>─</span>
+              <div>
+                <strong>Papers</strong> Research articles and preprints, with PDFs and links to arXiv and the journal.
+              </div>
+            </li>
             <li>
               <span>─</span>
               <div>
@@ -79,7 +87,7 @@ function formatDate(date: Date) {
           <label data-slot="search">
             <span class="visually-hidden">Search materials</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
-            <input id="search" type="search" placeholder="Search titles, venues, tags…" autocomplete="off" />
+            <input id="search" type="search" placeholder="Search titles, authors, venues, tags…" autocomplete="off" />
           </label>
         </section>
 
@@ -92,7 +100,7 @@ function formatDate(date: Date) {
             <a
               data-component="material"
               data-type={item.data.type}
-              data-search={[item.data.title, item.data.venue, item.data.abstract, ...item.data.tags].filter(Boolean).join(' ').toLowerCase()}
+              data-search={[item.data.title, item.data.venue, item.data.abstract, ...item.data.authors, ...item.data.tags].filter(Boolean).join(' ').toLowerCase()}
               href={`${base}/${item.id}/`}
             >
               <div data-slot="material-thumb" data-type={item.data.type}>
@@ -107,6 +115,9 @@ function formatDate(date: Date) {
                   <span data-slot="material-date">[{formatDate(item.data.date)}]</span>
                   {item.data.title}
                 </span>
+                {item.data.authors.length > 0 && (
+                  <span data-slot="material-venue">{item.data.authors.join(', ')}</span>
+                )}
                 {item.data.venue && (
                   <span data-slot="material-venue">{item.data.venue}</span>
                 )}

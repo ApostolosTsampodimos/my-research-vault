@@ -14,6 +14,10 @@ const materials = defineCollection({
     video: z.string().optional(),
     thumbnail: z.string().optional(),
     abstract: z.string().optional(),
+    // Papers
+    authors: z.array(z.string()).default([]),
+    arxiv: z.string().optional(),   // arXiv id, e.g. 2401.01234
+    doi: z.string().optional(),     // e.g. 10.1103/PhysRevD.109.024001
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),

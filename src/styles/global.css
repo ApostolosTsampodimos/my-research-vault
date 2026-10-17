@@ -399,11 +399,15 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   }
 }
 
-/* Phones: two rows of two plates instead of four squeezed ones */
+/* Phones: "All" on its own row, then the four types two by two */
 @media (max-width: 40rem) {
   [data-component="filters"] {
     display: grid;
     grid-template-columns: 1fr 1fr;
+  }
+
+  [data-slot="filter-btn"][data-type="all"] {
+    grid-column: 1 / -1;
   }
 }
 
@@ -697,6 +701,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 [data-slot="material-thumb"][data-type="talk"]      [data-slot="thumb-icon"] { color: var(--talk); }
 [data-slot="material-thumb"][data-type="poster"]    [data-slot="thumb-icon"] { color: var(--poster); }
 [data-slot="material-thumb"][data-type="animation"] [data-slot="thumb-icon"] { color: var(--animation); }
+[data-slot="material-thumb"][data-type="paper"]     [data-slot="thumb-icon"] { color: var(--paper); }
 
 [data-component="material"]:hover [data-slot="thumb-icon"] {
   opacity: 1;

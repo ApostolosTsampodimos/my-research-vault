@@ -39,12 +39,32 @@ draft: false
 Optional extended notes in Markdown.
 ```
 
+### Papers
+
+Papers use the same fields plus `authors`, `arxiv` and `doi` (all optional).
+`venue` holds the journal, or "Preprint". Copy `src/content/materials/example-paper.md` as a starting point:
+
+```markdown
+---
+title: "Your Paper Title"
+date: 2026-02-01
+type: paper
+venue: "Phys. Rev. D 109, 024001"
+authors: ["A. Tsampodimos", "Co-Author"]
+arxiv: "2401.01234"                       # → link to arxiv.org/abs/2401.01234
+doi: "10.1103/PhysRevD.109.024001"        # → link to doi.org/...
+pdf: /assets/pdfs/your-paper.pdf          # optional — your own copy
+abstract: "The paper's abstract."
+tags: ["tag1", "tag2"]
+---
+```
+
 ## Adding assets
 
 | Asset type | Where to put it | Referenced as |
 |---|---|---|
 | Reveal.js slides | `public/slides/your-talk/index.html` | `/slides/your-talk/` |
-| Beamer PDF | `public/assets/pdfs/name.pdf` | `/assets/pdfs/name.pdf` |
+| Beamer or paper PDF | `public/assets/pdfs/name.pdf` | `/assets/pdfs/name.pdf` |
 | Manim video | `public/assets/animations/name.mp4` | `/assets/animations/name.mp4` |
 | Manim source | `src-manim/name.py` | not served |
 | LaTeX source | `src-latex/name.tex` | not served |

@@ -36,6 +36,9 @@ function formatDate(date: Date) {
             <span data-slot="detail-date">{formatDate(item.data.date)}</span>
           </div>
           <h1>{item.data.title}</h1>
+          {item.data.authors.length > 0 && (
+            <p data-slot="detail-venue">{item.data.authors.join(', ')}</p>
+          )}
           {item.data.venue && (
             <p data-slot="detail-venue">{item.data.venue}</p>
           )}
@@ -55,7 +58,7 @@ function formatDate(date: Date) {
           </section>
         )}
 
-        {(item.data.slides || item.data.pdf) && (
+        {(item.data.slides || item.data.pdf || item.data.arxiv || item.data.doi) && (
           <section data-component="detail-actions">
             {item.data.slides && (
               <a
@@ -74,6 +77,26 @@ function formatDate(date: Date) {
                 download
               >
                 Download PDF
+              </a>
+            )}
+            {item.data.arxiv && (
+              <a
+                href={`https://arxiv.org/abs/${item.data.arxiv}`}
+                data-slot="action-btn"
+                target="_blank"
+                rel="noopener"
+              >
+                arXiv:{item.data.arxiv}
+              </a>
+            )}
+            {item.data.doi && (
+              <a
+                href={`https://doi.org/${item.data.doi}`}
+                data-slot="action-btn"
+                target="_blank"
+                rel="noopener"
+              >
+                Journal (DOI)
               </a>
             )}
           </section>
