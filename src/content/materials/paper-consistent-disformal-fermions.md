@@ -3,7 +3,7 @@ title: "On the consistent disformal couplings to fermions"
 date: 2026-02-13
 type: paper
 venue: "JCAP 02 (2026) 045"
-authors: ["Guillem Domènech", "Alexander Ganz", "Apostolos Tsabodimos"]
+authors: ["Guillem Domènech", "Alexander Ganz", "Apostolos Tsampodimos"]
 arxiv: "2510.07419"
 doi: "10.1088/1475-7516/2026/02/045"
 pdf: /assets/pdfs/consistent-disformal-fermions.pdf

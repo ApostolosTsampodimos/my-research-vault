@@ -3,7 +3,7 @@ title: "Finite distance effects on the Hellings–Downs curve in modified gravit
 date: 2024-10-07
 type: paper
 venue: "Eur. Phys. J. C 84, 1005 (2024)"
-authors: ["Guillem Domènech", "Apostolos Tsabodimos"]
+authors: ["Guillem Domènech", "Apostolos Tsampodimos"]
 doi: "10.1140/epjc/s10052-024-13418-w"
 pdf: /assets/pdfs/hellings-downs-finite-distance.pdf
 abstract: >

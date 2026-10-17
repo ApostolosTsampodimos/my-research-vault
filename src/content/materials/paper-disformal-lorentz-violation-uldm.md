@@ -3,7 +3,7 @@ title: "Apparent Lorentz violation from disformally coupled ultralight dark matt
 date: 2026-02-09
 type: paper
 venue: "Phys. Rev. D 113, 035007 (2026)"
-authors: ["Guillem Domènech", "Alexander Ganz", "Fiona Kirk", "Nathaniel Sherrill", "Apostolos Tsabodimos"]
+authors: ["Guillem Domènech", "Alexander Ganz", "Fiona Kirk", "Nathaniel Sherrill", "Apostolos Tsampodimos"]
 doi: "10.1103/l559-n7dk"
 pdf: /assets/pdfs/disformal-lorentz-violation-uldm.pdf
 abstract: >
