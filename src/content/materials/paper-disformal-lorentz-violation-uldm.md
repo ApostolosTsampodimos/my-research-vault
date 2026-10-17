@@ -22,8 +22,8 @@ tags: ["disformal", "Lorentz violation", "ultralight dark matter", "fermions", "
 ---
 
 <!--
-  Notes & thoughts: anything you write below this comment appears on the
-  paper's page under "Notes & thoughts". Markdown is supported.
+  Notes & comments: anything you write below this comment appears on the
+  paper's page under "Notes & comments". Markdown is supported.
 -->
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
