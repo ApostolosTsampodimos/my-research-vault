@@ -39,6 +39,10 @@ draft: false
 Optional extended notes in Markdown.
 ```
 
+The `abstract` field is shown under **Abstract** (**Description** for animations).
+Everything below the closing `---` is shown under **Notes & thoughts**, for your own
+comments; the section is hidden while the body is empty or only contains HTML comments.
+
 ### Papers
 
 Papers use the same fields plus `authors`, `arxiv` and `doi` (all optional).

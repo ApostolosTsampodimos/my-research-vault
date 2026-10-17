@@ -853,7 +853,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     gap: 0.9rem;
   }
 
-  [data-component="material"] [data-slot="type-badge"] {
+  [data-component="material"] [data-slot="type-badge"],
+  [data-component="detail-hero"] [data-slot="type-badge"] {
     position: relative;
     top: auto;
     right: auto;
@@ -1117,26 +1118,50 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 
 /* ── Detail: navigation ────────────────────────────────────── */
 [data-component="detail-nav"] {
-  padding: 1rem var(--padding);
+  padding: 1.75rem var(--padding) 0;
 }
 
-[data-component="detail-nav"] a {
-  font-size: 14px;
-  color: var(--color-text-weaker);
+/* Back: a quiet caption in the section-label style; the chevron lights up on hover */
+[data-page] [data-slot="back-link"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Russo One', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-weak);
   text-decoration: none;
-  letter-spacing: 0.05em;
+  transition: color 0.25s, text-shadow 0.25s;
 }
 
-[data-component="detail-nav"] a:hover {
+[data-slot="back-link"] svg {
+  color: #ff1177;
+  filter: drop-shadow(0 0 4px #ff1177);
+  transition: transform 0.25s ease;
+}
+
+[data-page] [data-slot="back-link"]:hover {
   color: var(--color-text-strong);
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
-  text-decoration-thickness: 1px;
+  text-shadow: 0 0 8px hsla(330, 100%, 60%, 0.5);
+}
+
+[data-slot="back-link"]:hover svg {
+  transform: translateX(-4px);
 }
 
 /* ── Detail: hero ──────────────────────────────────────────── */
 [data-component="detail-hero"] {
   padding: 2rem var(--padding) var(--vertical-padding);
+  position: relative;
+}
+
+/* Type sign straddles the panel edge, as in the list */
+[data-component="detail-hero"] [data-slot="type-badge"] {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
 }
 
 @media (max-width: 30rem) {
@@ -1183,18 +1208,26 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   line-height: 200%;
 }
 
-[data-component="detail-tags"] {
+/* Section heading: a short neon tick and a small sign-style caption */
+[data-component] [data-slot="section-label"] {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+  font-family: 'Russo One', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-strong);
 }
 
-[data-slot="tag"] {
-  font-size: 12px;
-  color: var(--color-text-weak);
-  border: 2.5px solid var(--color-border-weak);
-  padding: 0.15rem 0.5rem;
-  border-radius: 2px;
+[data-component] [data-slot="section-label"]::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  background: #ff1177;
+  box-shadow: 0 0 6px #ff1177;
 }
 
 /* ── Detail: actions ───────────────────────────────────────── */
