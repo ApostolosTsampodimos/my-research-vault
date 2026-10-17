@@ -1,0 +1,21 @@
+---
+// Diner-sign arrow badge. Shape, clip and wood texture live in Base.astro defs.
+interface Props {
+  type: string;
+}
+
+const { type } = Astro.props;
+---
+<span data-slot="type-badge" data-type={type}>
+  <svg viewBox="0 0 140 44" aria-hidden="true">
+    <use href="#badge-shape" class="badge-body" />
+    <use href="#badge-shape" class="badge-wood" />
+    <g clip-path="url(#badge-clip)">
+      <use href="#badge-shape" class="badge-pale" />
+      <use href="#badge-shape" class="badge-gap" />
+      <use href="#badge-shape" class="badge-neon" />
+      <use href="#badge-shape" class="badge-rim" />
+    </g>
+  </svg>
+  <span data-slot="badge-label">{type}</span>
+</span>

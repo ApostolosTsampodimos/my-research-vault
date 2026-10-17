@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import TypeBadge from '../components/TypeBadge.astro';
 
 const allMaterials = await getCollection('materials', ({ data }) => !data.draft);
 allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -63,6 +64,7 @@ function formatDate(date: Date) {
                 data-slot="filter-btn"
                 data-type={t}
               >
+                <span data-slot="filter-plate" aria-hidden="true"></span>
                 <span data-slot="filter-label">{t === 'all' ? 'All' : t} <span data-slot="filter-count">{count}</span></span>
               </button>
             );
@@ -92,7 +94,7 @@ function formatDate(date: Date) {
                   <span data-slot="material-abstract">{item.data.abstract}</span>
                 )}
               </div>
-              <span data-slot="type-badge" data-type={item.data.type}>{item.data.type}</span>
+              <TypeBadge type={item.data.type} />
             </a>
           ))}
         </div>

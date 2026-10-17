@@ -109,7 +109,7 @@ body::after {
   flex-direction: column;
   color: var(--color-text);
   font-family: var(--font-mono);
-  padding-bottom: 12rem;
+  padding-bottom: 4rem;
 }
 
 [data-page] a {
@@ -139,17 +139,61 @@ body::after {
 }
 
 /* ── Container ─────────────────────────────────────────────── */
+/* ── Backdrop scene (far plane) ───────────────────────────── */
+#backdrop {
+  --parallax: 0px;
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* The photo, pushed back: dimmed, softened, scaled so blur edges stay offscreen */
+#backdrop::before {
+  content: '';
+  position: absolute;
+  inset: -4%;
+  background: url('../assets/backdrop-house.jpg') center 72% / cover no-repeat;
+  filter: blur(2.5px) brightness(0.65) saturate(1) contrast(1.05);
+  transform: translateY(var(--parallax)) scale(1.04);
+  will-change: transform;
+}
+
+/* Atmosphere: fade into the theme background at the edges, vignette the sides */
+#backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 75% 65% at 50% 60%, transparent 40%, hsla(270, 30%, 5%, 0.75) 100%),
+    linear-gradient(to bottom,
+      hsla(270, 25%, 8%, 0.7) 0%,
+      hsla(270, 25%, 8%, 0.2) 30%,
+      hsla(270, 25%, 8%, 0.1) 65%,
+      hsla(270, 25%, 8%, 0.9) 100%);
+}
+
+/* ── Main panel (near plane) ──────────────────────────────── */
 [data-component="container"] {
   max-width: 67.5rem;
-  margin: 0 auto;
+  margin: 3.5rem auto 0;
   border: 2.5px solid var(--color-border-weak);
-  border-top: none;
-  background: var(--color-background);
+  background: color-mix(in srgb, var(--color-background) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(10px) saturate(1.15);
+  box-shadow:
+    0 0 0 1px hsla(270, 30%, 3%, 0.6),
+    0 30px 60px -10px hsla(270, 40%, 2%, 0.8),
+    0 60px 140px 10px hsla(270, 40%, 2%, 0.6),
+    0 0 90px -20px hsla(325, 80%, 55%, 0.25);
 }
 
 @media (max-width: 65rem) {
   [data-component="container"] {
     border: none;
+    margin-top: 0;
+    box-shadow: none;
   }
 }
 
@@ -301,13 +345,13 @@ body::after {
   margin-bottom: 0;
 }
 
-/* ── Filter bar (tab style) ────────────────────────────────── */
+/* ── Filter bar (sign plates) ──────────────────────────────── */
 [data-component="filters"] {
   border-top: 2.5px solid var(--color-border-weak);
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: stretch;
-  padding: 14px var(--padding);
+  padding: 16px var(--padding);
 }
 
 @media (max-width: 60rem) {
@@ -317,11 +361,27 @@ body::after {
   }
 }
 
+/* Chamfered top-left / bottom-right corners; --c is the cut size */
+[data-slot="filter-btn"],
+[data-slot="filter-plate"],
+[data-slot="filter-plate"]::before,
+[data-slot="filter-plate"]::after {
+  clip-path: polygon(
+    var(--c) 0%, 100% 0%, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0% 100%, 0% var(--c)
+  );
+}
+
+/* Layers, outside in: frame (button bg) → neon wire → plate → pale stripe → plate face */
 [data-slot="filter-btn"] {
+  --c: 12px;
+  --frame: var(--color-border-weak);
+  --plate: var(--color-background-weak);
+  --stripe: color-mix(in srgb, var(--color-text-weaker) 70%, transparent);
   appearance: none;
-  background: var(--color-background-weak);
-  border: 2.5px solid var(--color-border-weak);
-  padding: 14px 0;
+  background: var(--frame);
+  border: none;
+  padding: 16px 0;
   margin: 0;
   cursor: pointer;
   color: var(--color-text-weaker);
@@ -334,24 +394,62 @@ body::after {
   flex: 1;
   text-align: center;
   position: relative;
-  clip-path: polygon(
-    10px 0%, 100% 0%, 100% calc(100% - 10px),
-    calc(100% - 10px) 100%, 0% 100%, 0% 10px
-  );
-  transition: color 0.3s, text-shadow 0.3s;
+  isolation: isolate;
+  transition: color 0.3s, text-shadow 0.3s, background 0.3s;
 }
 
+/* Neon wire: a pink fill behind the plate, wiped in/out via mask-size */
 [data-slot="filter-btn"]::before {
   content: '';
   position: absolute;
   inset: 0;
-  border: 2.5px solid #ff1177;
+  background: #ff1177;
   pointer-events: none;
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.45s ease;
+  -webkit-mask: linear-gradient(#000, #000) left / 0% 100% no-repeat;
+  mask: linear-gradient(#000, #000) left / 0% 100% no-repeat;
+  transition: -webkit-mask-size 0.45s ease, mask-size 0.45s ease;
+}
+
+[data-slot="filter-plate"] {
+  --c: 10.5px;
+  position: absolute;
+  inset: 2.5px;
+  background: var(--plate);
+  pointer-events: none;
+}
+
+[data-slot="filter-plate"]::before,
+[data-slot="filter-plate"]::after {
+  content: '';
+  position: absolute;
+}
+
+[data-slot="filter-plate"]::before {
+  --c: 8.7px;
+  inset: 3px;
+  background: var(--stripe);
+  transition: background 0.3s;
+}
+
+/* Plate face: subtle top sheen, plank lines and two mounting holes */
+[data-slot="filter-plate"]::after {
+  --c: 8.1px;
+  inset: 4px;
+  background:
+    radial-gradient(circle at 9px 50%, var(--frame) 1.6px, transparent 2.2px),
+    radial-gradient(circle at calc(100% - 9px) 50%, var(--frame) 1.6px, transparent 2.2px),
+    repeating-linear-gradient(to bottom, transparent 0 10px, rgba(0, 0, 0, 0.18) 10px 11px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--plate) 88%, #fff) 0%, var(--plate) 55%, color-mix(in srgb, var(--plate) 80%, #000) 100%);
+  transition: background 0.3s;
+}
+
+[data-slot="filter-label"] {
+  position: relative;
+  z-index: 1;
 }
 
 [data-slot="filter-btn"]:hover {
+  --frame: var(--color-border);
   color: #ff1177;
   text-shadow:
     0 0 7px #ff1177,
@@ -360,6 +458,8 @@ body::after {
 }
 
 [data-slot="filter-btn"].active {
+  --plate: color-mix(in srgb, #ff1177 7%, var(--color-background-weak));
+  --stripe: hsla(340, 100%, 60%, 0.3);
   color: #ff1177;
   text-shadow:
     0 0 7px #ff1177,
@@ -370,32 +470,36 @@ body::after {
 }
 
 [data-slot="filter-btn"].active::before {
-  clip-path: inset(0 0 0 0);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 /* Direction classes for wire animation */
-[data-slot="filter-btn"].wire-fill-right::before { clip-path: inset(0 100% 0 0); }
-[data-slot="filter-btn"].wire-fill-right.wire-on::before { clip-path: inset(0 0 0 0); }
+[data-slot="filter-btn"].wire-fill-right::before  { -webkit-mask-position: left;  mask-position: left;  -webkit-mask-size: 0% 100%;   mask-size: 0% 100%; }
+[data-slot="filter-btn"].wire-fill-left::before   { -webkit-mask-position: right; mask-position: right; -webkit-mask-size: 0% 100%;   mask-size: 0% 100%; }
+[data-slot="filter-btn"].wire-on::before          { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
 
-[data-slot="filter-btn"].wire-fill-left::before { clip-path: inset(0 0 0 100%); }
-[data-slot="filter-btn"].wire-fill-left.wire-on::before { clip-path: inset(0 0 0 0); }
+[data-slot="filter-btn"].wire-drain-right::before { -webkit-mask-position: right; mask-position: right; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+[data-slot="filter-btn"].wire-drain-left::before  { -webkit-mask-position: left;  mask-position: left;  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+[data-slot="filter-btn"].wire-out::before         { -webkit-mask-size: 0% 100%;   mask-size: 0% 100%; }
 
-[data-slot="filter-btn"].wire-drain-right::before { clip-path: inset(0 0 0 0); }
-[data-slot="filter-btn"].wire-drain-right.wire-out::before { clip-path: inset(0 0 0 100%); }
-
-[data-slot="filter-btn"].wire-drain-left::before { clip-path: inset(0 0 0 0); }
-[data-slot="filter-btn"].wire-drain-left.wire-out::before { clip-path: inset(0 100% 0 0); }
-
+/* Count sits in a small inset tag */
 [data-slot="filter-count"] {
+  display: inline-block;
   color: var(--color-text-weaker);
-  font-size: 0.85em;
-  margin-left: 0.3em;
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  padding: 2px 5px;
+  border: 1px solid var(--color-border-weak);
   font-family: var(--font-mono);
   letter-spacing: 0;
+  text-shadow: none;
+  vertical-align: 1px;
 }
 
 [data-slot="filter-btn"].active [data-slot="filter-count"] {
-  color: hsla(340, 100%, 60%, 0.5);
+  color: hsla(340, 100%, 60%, 0.6);
+  border-color: hsla(340, 100%, 60%, 0.35);
 }
 
 /* ── Materials list ────────────────────────────────────────── */
@@ -525,7 +629,7 @@ body::after {
   text-decoration-color: var(--color-text-strong);
 }
 
-/* ── Type badge ────────────────────────────────────────────── */
+/* ── Type badge (diner-sign arrow) ─────────────────────────── */
 [data-component="material"] [data-slot="type-badge"] {
   position: absolute;
   right: 0;
@@ -534,142 +638,316 @@ body::after {
 }
 
 [data-slot="type-badge"] {
-  font-family: var(--font-mono);
+  --badge-color: var(--color-text-weak);
+  --badge-body: color-mix(in srgb, var(--badge-color) 22%, var(--color-background));
+  position: relative;
+  display: block;
+  width: 140px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+[data-slot="type-badge"][data-type="talk"]      { --badge-color: var(--talk); }
+[data-slot="type-badge"][data-type="poster"]    { --badge-color: var(--poster); }
+[data-slot="type-badge"][data-type="animation"] { --badge-color: var(--animation); }
+[data-slot="type-badge"][data-type="lecture"]   { --badge-color: var(--lecture); }
+[data-slot="type-badge"][data-type="paper"]     { --badge-color: var(--paper); }
+
+[data-slot="type-badge"] svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--badge-color) 25%, transparent));
+  transition: filter 0.3s;
+}
+
+/* Layers, outermost stripe drawn widest first, all clipped to the arrow */
+[data-slot="type-badge"] .badge-body  { fill: var(--badge-body); }
+[data-slot="type-badge"] .badge-wood  { fill: url(#badge-wood); }
+[data-slot="type-badge"] .badge-pale  { fill: none; stroke: color-mix(in srgb, var(--badge-color) 55%, var(--color-text-strong)); stroke-width: 11; opacity: 0.7; }
+[data-slot="type-badge"] .badge-gap   { fill: none; stroke: var(--badge-body); stroke-width: 9.6; }
+[data-slot="type-badge"] .badge-neon  { fill: none; stroke: var(--badge-color); stroke-width: 8.2; }
+[data-slot="type-badge"] .badge-rim   { fill: none; stroke: color-mix(in srgb, var(--badge-color) 32%, var(--color-background)); stroke-width: 5; }
+[data-slot="type-badge"] use { stroke-linejoin: miter; stroke-miterlimit: 10; }
+
+/* Lettering sits on the shaft, between the fletching and the head */
+[data-slot="badge-label"] {
+  position: absolute;
+  inset: 0 20% 0 19%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Russo One', sans-serif;
   font-size: 11px;
-  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.4rem 0.85rem;
   white-space: nowrap;
-  border: 1px solid;
-  border-radius: 0;
-  background: var(--color-background);
-  box-shadow:
-    1px 1px 0 0 var(--color-border-weak),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 var(--color-border-weak);
+  color: color-mix(in srgb, var(--badge-color) 12%, #f6ecd6);
+  text-shadow:
+    1px 1px 0 hsl(270, 30%, 4%),
+    2px 2px 0 hsl(270, 30%, 4%);
+  transition: text-shadow 0.3s;
 }
 
-[data-slot="type-badge"]::before {
-  content: '[ ';
-  opacity: 0.4;
+[data-component="material"]:hover [data-slot="type-badge"] svg {
+  filter:
+    drop-shadow(0 0 4px var(--badge-color))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--badge-color) 60%, transparent));
 }
 
-[data-slot="type-badge"]::after {
-  content: ' ]';
-  opacity: 0.4;
+[data-component="material"]:hover [data-slot="type-badge"] .badge-neon {
+  animation: badge-flicker 4s infinite;
 }
 
-[data-slot="type-badge"][data-type="talk"] {
-  color: var(--talk);
-  border-color: color-mix(in srgb, var(--talk) 30%, var(--color-border-weak));
-  box-shadow:
-    1px 1px 0 0 color-mix(in srgb, var(--talk) 20%, transparent),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 color-mix(in srgb, var(--talk) 10%, var(--color-border-weak));
+[data-component="material"]:hover [data-slot="badge-label"] {
+  text-shadow:
+    1px 1px 0 hsl(270, 30%, 4%),
+    2px 2px 0 hsl(270, 30%, 4%),
+    0 0 8px color-mix(in srgb, var(--badge-color) 70%, transparent);
 }
 
-[data-slot="type-badge"][data-type="poster"] {
-  color: var(--poster);
-  border-color: color-mix(in srgb, var(--poster) 30%, var(--color-border-weak));
-  box-shadow:
-    1px 1px 0 0 color-mix(in srgb, var(--poster) 20%, transparent),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 color-mix(in srgb, var(--poster) 10%, var(--color-border-weak));
+@keyframes badge-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.35; }
 }
 
-[data-slot="type-badge"][data-type="animation"] {
-  color: var(--animation);
-  border-color: color-mix(in srgb, var(--animation) 30%, var(--color-border-weak));
-  box-shadow:
-    1px 1px 0 0 color-mix(in srgb, var(--animation) 20%, transparent),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 color-mix(in srgb, var(--animation) 10%, var(--color-border-weak));
-}
-
-[data-slot="type-badge"][data-type="lecture"] {
-  color: var(--lecture);
-  border-color: color-mix(in srgb, var(--lecture) 30%, var(--color-border-weak));
-  box-shadow:
-    1px 1px 0 0 color-mix(in srgb, var(--lecture) 20%, transparent),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 color-mix(in srgb, var(--lecture) 10%, var(--color-border-weak));
-}
-
-[data-slot="type-badge"][data-type="paper"] {
-  color: var(--paper);
-  border-color: color-mix(in srgb, var(--paper) 30%, var(--color-border-weak));
-  box-shadow:
-    1px 1px 0 0 color-mix(in srgb, var(--paper) 20%, transparent),
-    2px 2px 0 0 var(--color-background),
-    3px 3px 0 0 color-mix(in srgb, var(--paper) 10%, var(--color-border-weak));
-}
-
-/* ── Footer ────────────────────────────────────────────────── */
-[data-component="footer"] {
-  border-top: 2.5px solid var(--color-border-weak);
-  display: flex;
-  flex-direction: row;
-}
-
-@media (max-width: 65rem) {
-  [data-component="footer"] {
-    border-bottom: 2.5px solid var(--color-border-weak);
-  }
-}
-
-[data-slot="cell"] {
-  flex: 1;
-  text-align: center;
-}
-
-[data-slot="cell"] a {
-  text-decoration: none;
-  padding: 2rem 0;
+/* ── Rain canvases ────────────────────────────────────────── */
+[data-slot="rain"] {
+  position: fixed;
+  inset: 0;
   width: 100%;
-  display: block;
-  color: var(--color-text-strong);
+  height: 100%;
+  pointer-events: none;
 }
 
-[data-slot="cell"] a span {
-  color: var(--color-text-weak);
-}
-
-[data-slot="cell"] a:hover {
-  background: var(--color-background-weak);
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
-  text-decoration-thickness: 1px;
-}
-
-[data-slot="cell"] + [data-slot="cell"] {
-  border-left: 2.5px solid var(--color-border-weak);
-}
-
-@media (max-width: 40rem) {
-  [data-slot="cell"] + [data-slot="cell"] {
-    border-left: none;
-  }
-}
-
-/* ── Legal ─────────────────────────────────────────────────── */
-[data-component="legal"] {
-  color: var(--color-text-weak);
-  text-align: center;
+/* ── Ground footer (wet ground the rain lands on) ─────────── */
+[data-component="ground"] {
+  position: relative;
+  height: 340px;
+  margin-top: 2rem;
   display: flex;
-  gap: 32px;
-  justify-content: center;
-  font-size: 14px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: var(--font-mono);
 }
 
-[data-component="legal"] a {
+/* The plane: starts at a soft horizon line and gets darker toward the viewer */
+[data-slot="ground-plane"] {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 65%;
+  background:
+    radial-gradient(ellipse 45% 35% at 50% 0%, hsla(325, 85%, 60%, 0.14), transparent 70%),
+    linear-gradient(to bottom, hsla(270, 30%, 9%, 0.35) 0%, hsla(270, 30%, 6%, 0.85) 40%, hsl(270, 30%, 4%) 100%);
+}
+
+/* Horizon edge: a thin glow where the ground meets the sky */
+[data-slot="ground-plane"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, hsla(325, 70%, 70%, 0.45) 30%, hsla(325, 70%, 70%, 0.45) 70%, transparent);
+  box-shadow: 0 0 12px 1px hsla(325, 80%, 60%, 0.35);
+  z-index: 1;
+}
+
+/* Wooden pool frame seen in perspective: rim on top, front face below.
+   The Base.astro rain script reads these properties to keep splashes inside the water. */
+[data-slot="ground-box"] {
+  --far: 6%;
+  --near: 2%;
+  --face: 12px;
+  --rim-top: 5px;
+  --rim-far: 7px;
+  --rim-near: 13px;
+  --wood: hsla(305, 16%, 13%, 0.7);
+  --wood-face: hsla(305, 18%, 8%, 0.85);
+  --wood-edge: hsla(335, 45%, 45%, 0.22);
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  bottom: 52px;
+  clip-path: polygon(
+    var(--far) 0, calc(100% - var(--far)) 0,
+    calc(100% - var(--near)) calc(100% - var(--face)), calc(100% - var(--near)) 100%,
+    var(--near) 100%, var(--near) calc(100% - var(--face))
+  );
+  background:
+    /* front face: plank seams, sunset catch-light on its top edge, dark board */
+    repeating-linear-gradient(to right, transparent 0 139px, hsla(0, 0%, 0%, 0.4) 139px 140px) bottom / 100% var(--face) no-repeat,
+    linear-gradient(to bottom, var(--wood-edge) 0 1px, var(--wood-face) 1px) bottom / 100% var(--face) no-repeat,
+    /* rim: catch-light on the far edge, faint grain, weathered board */
+    linear-gradient(to bottom, var(--wood-edge) 0 1px, transparent 1px),
+    repeating-linear-gradient(to bottom, transparent 0 2px, hsla(320, 30%, 35%, 0.05) 2px 3px),
+    var(--wood);
+}
+
+/* Water: inset from the rim on every side, holding the reflection */
+[data-slot="ground-water"] {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: polygon(
+    calc(var(--far) + var(--rim-far)) var(--rim-top),
+    calc(100% - var(--far) - var(--rim-far)) var(--rim-top),
+    calc(100% - var(--near) - var(--rim-near)) calc(100% - var(--face) - var(--rim-near)),
+    calc(var(--near) + var(--rim-near)) calc(100% - var(--face) - var(--rim-near))
+  );
+  background:
+    radial-gradient(ellipse 45% 40% at 50% 0%, hsla(325, 85%, 60%, 0.14), transparent 70%),
+    repeating-linear-gradient(to bottom, transparent 0 7px, hsla(300, 60%, 75%, 0.03) 7px 8px),
+    linear-gradient(to bottom, hsla(270, 35%, 4%, 0.9), hsla(270, 35%, 3%, 0.95));
+}
+
+/* Reflection: the sunset scene, flipped and smeared across the water */
+[data-slot="ground-water"]::after {
+  content: '';
+  position: absolute;
+  inset: 0 -4%;
+  background: url('../assets/backdrop-house.jpg') center 62% / cover no-repeat;
+  transform: scaleY(-1);
+  filter: blur(4px) brightness(0.45) saturate(1.2);
+  opacity: 0.6;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 90%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 90%);
+  animation: ground-shimmer 7s ease-in-out infinite alternate;
+}
+
+@keyframes ground-shimmer {
+  from { transform: scaleY(-1) translateX(0); }
+  to   { transform: scaleY(-1.03) translateX(-1%); }
+}
+
+/* ── Rain toggle ──────────────────────────────────────────── */
+/* Same chamfered plate as the filter buttons: button bg is the frame, ::after the face */
+[data-slot="rain-toggle"] {
+  --c: 8px;
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 60;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  background: var(--color-border);
+  clip-path: polygon(
+    var(--c) 0%, 100% 0%, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0% 100%, 0% var(--c)
+  );
+  font-family: 'Russo One', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ff1177;
+  text-shadow: 0 0 6px #ff1177;
+  transition: color 0.3s, text-shadow 0.3s, background 0.3s;
+}
+
+[data-slot="rain-toggle"]::after {
+  --c: 7px;
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: var(--color-background-weak);
+  clip-path: polygon(
+    var(--c) 0%, 100% 0%, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0% 100%, 0% var(--c)
+  );
+}
+
+[data-slot="rain-toggle"] svg {
+  filter: drop-shadow(0 0 4px #ff1177);
+}
+
+[data-slot="rain-icon-off"] {
+  display: none;
+}
+
+[data-slot="rain-toggle"][aria-pressed="false"] {
   color: var(--color-text-weak);
-  text-decoration: none;
+  text-shadow: none;
 }
 
-[data-component="legal"] a:hover {
+[data-slot="rain-toggle"][aria-pressed="false"] svg {
+  filter: none;
+}
+
+[data-slot="rain-toggle"][aria-pressed="false"] [data-slot="rain-icon-drops"] {
+  display: none;
+}
+
+[data-slot="rain-toggle"][aria-pressed="false"] [data-slot="rain-icon-off"] {
+  display: inline;
+}
+
+[data-slot="rain-toggle"]:hover {
+  color: #ff1177;
+  text-shadow: 0 0 7px #ff1177, 0 0 15px #ff1177;
+}
+
+/* clip-path would cut an outline, so focus lights the frame instead */
+[data-slot="rain-toggle"]:focus-visible {
+  outline: none;
+  background: #ff1177;
+}
+
+/* Links stand on the horizon like a small roadside sign */
+[data-slot="ground-sign"] {
+  position: absolute;
+  bottom: 62%;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+  font-family: 'Russo One', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-slot="ground-sign"] a {
   color: var(--color-text);
-  text-decoration: underline;
+  text-decoration: none;
+  text-shadow: 0 2px 0 hsl(270, 30%, 4%);
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+[data-slot="ground-sign"] a:hover {
+  color: #ff1177;
+  text-shadow:
+    0 0 7px #ff1177,
+    0 0 15px #ff1177,
+    0 0 30px #ff1177;
+}
+
+[data-slot="ground-sep"] {
+  color: #ff1177;
+  font-size: 8px;
+  text-shadow: 0 0 6px #ff1177;
+}
+
+[data-slot="ground-legal"] {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.5rem;
+  font-size: 12px;
+  color: var(--color-text-weaker);
+  letter-spacing: 0.05em;
 }
 
 /* ── Detail: navigation ────────────────────────────────────── */

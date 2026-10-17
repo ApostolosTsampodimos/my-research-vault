@@ -10,6 +10,8 @@ const {
   title,
   description = 'My research vault — talks, animations, and posters by Apostolos Tsampodimos',
 } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -20,65 +22,240 @@ const {
   <meta name="description" content={description} />
 </head>
 <body>
-  <canvas id="rain" style="position:absolute;top:0;left:0;width:100%;z-index:-1;pointer-events:none;"></canvas>
+  <div id="backdrop" aria-hidden="true"></div>
+  <!-- Far rain falls behind the panel; near rain and splashes fall in front of everything -->
+  <canvas id="rain-back" data-slot="rain" style="z-index:-1;" aria-hidden="true"></canvas>
+  <canvas id="rain-front" data-slot="rain" style="z-index:40;" aria-hidden="true"></canvas>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <path id="badge-shape" d="M1 1 H22 L27 5 H111 V2 L139 22 L111 42 V39 H27 L22 43 H1 L10 22 Z" />
+      <clipPath id="badge-clip"><use href="#badge-shape" /></clipPath>
+      <pattern id="badge-wood" width="140" height="11" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0.5" x2="140" y2="0.5" stroke="#000" stroke-opacity="0.22" stroke-width="0.6" />
+      </pattern>
+    </defs>
+  </svg>
   <slot />
+  <footer data-component="ground">
+    <nav data-slot="ground-sign">
+      <a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">GitHub</a>
+      <span data-slot="ground-sep" aria-hidden="true">◆</span>
+      <a href={base}>Apostolos Tsampodimos</a>
+    </nav>
+    <div data-slot="ground-plane" aria-hidden="true">
+      <div data-slot="ground-box">
+        <div data-slot="ground-water"></div>
+      </div>
+    </div>
+    <span data-slot="ground-legal">&copy; 2026 Apostolos Tsampodimos</span>
+  </footer>
+  <button data-slot="rain-toggle" type="button" aria-pressed="true" aria-label="Rain">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 15a4.5 4.5 0 1 1 .9-8.9A5.5 5.5 0 0 1 18.5 8 3.5 3.5 0 0 1 17.5 15Z" />
+      <path data-slot="rain-icon-drops" d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5" />
+      <path data-slot="rain-icon-off" d="M4 4l16 16" />
+    </svg>
+    <span data-slot="rain-toggle-label">Rain</span>
+  </button>
   <script is:inline>
     (function() {
-      var c = document.getElementById('rain');
-      var ctx = c.getContext('2d');
-      var drops = [];
+      var back = document.getElementById('rain-back');
+      var front = document.getElementById('rain-front');
+      var toggle = document.querySelector('[data-slot="rain-toggle"]');
+      var bctx = back.getContext('2d');
+      var fctx = front.getContext('2d');
+      var box = document.querySelector('[data-slot="ground-box"]');
+      var W = 0, H = 0;
+      var WIND = 0.16;
+      var far = [], near = [], splashes = [];
+      var running = false;
+      var pool = {};
 
-      function resize() {
-        c.width = window.innerWidth;
-        c.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-        drops = [];
-        var count = Math.floor(c.width / 4);
-        for (var i = 0; i < count; i++) {
-          drops.push(makeDrop(true));
-        }
-      }
-
-      function makeDrop(randomY) {
+      // z is depth: 0 = far away, 1 = right in front of the viewer
+      function makeDrop(z, randomY) {
+        var len = 10 + z * z * 70;
         return {
-          x: -200 + Math.random() * (c.width + 200),
-          y: randomY ? Math.random() * c.height : -Math.random() * 100,
-          len: 20 + Math.random() * 60,
-          speed: 3 + Math.random() * 5,
-          opacity: 0.25 + Math.random() * 0.75,
-          w: 0.5 + Math.random() * 1
+          z: z,
+          x: -100 + Math.random() * (W + 100),
+          y: randomY ? Math.random() * H : -len - Math.random() * H * 0.3,
+          len: len,
+          speed: 4 + z * 13,
+          w: 0.4 + z * 1.2,
+          alpha: 0.15 + z * 0.45
         };
       }
 
-      function draw() {
-        var fullH = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, window.innerHeight);
-        if (c.height !== fullH) {
-          c.height = fullH;
+      function farDrop(randomY) { return makeDrop(Math.random() * 0.5, randomY); }
+      function nearDrop(randomY) { return makeDrop(0.55 + Math.random() * 0.45, randomY); }
+
+      function resize() {
+        W = back.width = front.width = window.innerWidth;
+        H = back.height = front.height = window.innerHeight;
+        far = [];
+        near = [];
+        for (var i = 0; i < W / 5; i++) far.push(farDrop(true));
+        for (var j = 0; j < W / 45; j++) near.push(nearDrop(true));
+
+        // Pool shape comes from the ground-box custom properties in global.css
+        var cs = getComputedStyle(box);
+        pool = {
+          far: parseFloat(cs.getPropertyValue('--far')) / 100,
+          near: parseFloat(cs.getPropertyValue('--near')) / 100,
+          face: parseFloat(cs.getPropertyValue('--face')),
+          rimTop: parseFloat(cs.getPropertyValue('--rim-top')),
+          rimFar: parseFloat(cs.getPropertyValue('--rim-far')),
+          rimNear: parseFloat(cs.getPropertyValue('--rim-near'))
+        };
+      }
+
+      // Water surface at depth t (0 = far edge, 1 = near edge): its y and x extent
+      function waterAt(t, r) {
+        var top = r.top + pool.rimTop;
+        var bottom = r.bottom - pool.face - pool.rimNear;
+        var inset = r.width * (pool.far + (pool.near - pool.far) * t) + pool.rimFar + (pool.rimNear - pool.rimFar) * t;
+        return { y: top + t * (bottom - top), left: r.left + inset, right: r.right - inset };
+      }
+
+      function splash(x, y, z) {
+        var s = 0.25 + z * 1.1;
+        var bits = [];
+        var n = 1 + Math.floor(Math.random() * 3 * z + 1);
+        for (var i = 0; i < n; i++) {
+          bits.push({
+            x: x, y: y,
+            vx: (Math.random() - 0.5) * 2.4 * s,
+            vy: -(1 + Math.random() * 1.8) * s
+          });
         }
-        ctx.clearRect(0, 0, c.width, c.height);
-        for (var i = 0; i < drops.length; i++) {
-          var d = drops[i];
-          var grad = ctx.createLinearGradient(d.x, d.y, d.x, d.y + d.len);
-          grad.addColorStop(0, 'hsla(350,40%,55%,0)');
-          grad.addColorStop(0.4, 'hsla(350,40%,55%,' + d.opacity + ')');
-          grad.addColorStop(1, 'hsla(350,40%,55%,' + (d.opacity * 0.3) + ')');
-          ctx.beginPath();
-          ctx.moveTo(d.x, d.y);
-          ctx.lineTo(d.x + d.len * 0.15, d.y + d.len);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = d.w;
-          ctx.stroke();
-          d.x += d.speed * 0.15;
-          d.y += d.speed;
-          if (d.y > c.height + d.len) {
-            drops[i] = makeDrop(false);
+        splashes.push({ x: x, y: y, s: s, t: 0, life: 18 + z * 16, bits: bits });
+      }
+
+      function fall(d) {
+        d.y += d.speed;
+        d.x += d.speed * WIND;
+      }
+
+      // Returns true when the drop reached the ground (splashing if it landed in the water)
+      function land(d, t, r, visible, chance) {
+        if (!visible) return false;
+        var w = waterAt(t, r);
+        if (d.y < w.y) return false;
+        var crossed = d.y - d.speed < w.y;
+        if (crossed && d.x > w.left && d.x < w.right && Math.random() < chance) splash(d.x, w.y, d.z);
+        return true;
+      }
+
+      function drawDrop(ctx, d, color) {
+        var g = ctx.createLinearGradient(d.x, d.y - d.len, d.x, d.y);
+        g.addColorStop(0, color + '0)');
+        g.addColorStop(1, color + d.alpha + ')');
+        ctx.beginPath();
+        ctx.moveTo(d.x - d.len * WIND, d.y - d.len);
+        ctx.lineTo(d.x, d.y);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = d.w;
+        ctx.stroke();
+      }
+
+      function draw() {
+        if (!running) return;
+        var r = box.getBoundingClientRect();
+        var visible = r.top < H;
+
+        bctx.clearRect(0, 0, W, H);
+        fctx.clearRect(0, 0, W, H);
+
+        // Far drops land in the back quarter of the pool, near drops further forward
+        for (var i = 0; i < far.length; i++) {
+          var d = far[i];
+          fall(d);
+          if (land(d, d.z * 0.5, r, visible, 0.5) || d.y - d.len > H) { far[i] = farDrop(false); continue; }
+          drawDrop(bctx, d, 'hsla(290,35%,72%,');
+        }
+
+        for (var j = 0; j < near.length; j++) {
+          var n = near[j];
+          fall(n);
+          if (land(n, 0.25 + (n.z - 0.55) / 0.45 * 0.75, r, visible, 1) || n.y - n.len > H) { near[j] = nearDrop(false); continue; }
+          drawDrop(fctx, n, 'hsla(330,60%,82%,');
+        }
+
+        // Splashes: a flattened ripple ring plus a few droplets thrown up
+        for (var k = splashes.length - 1; k >= 0; k--) {
+          var s = splashes[k];
+          s.t++;
+          var p = s.t / s.life;
+          if (p >= 1) { splashes.splice(k, 1); continue; }
+          var a = (1 - p) * (0.35 + s.s * 0.4);
+          var rx = s.s * (2 + p * 14);
+          fctx.beginPath();
+          fctx.ellipse(s.x, s.y, rx, rx * 0.25, 0, 0, Math.PI * 2);
+          fctx.strokeStyle = 'hsla(320,70%,82%,' + a + ')';
+          fctx.lineWidth = 0.8 + s.s * 0.5;
+          fctx.stroke();
+          fctx.fillStyle = 'hsla(330,70%,88%,' + a + ')';
+          for (var b = 0; b < s.bits.length; b++) {
+            var bit = s.bits[b];
+            bit.x += bit.vx;
+            bit.y += bit.vy;
+            bit.vy += 0.22 * s.s;
+            if (bit.y > s.y) continue;
+            fctx.fillRect(bit.x, bit.y, 0.8 + s.s, 0.8 + s.s);
           }
         }
+
         requestAnimationFrame(draw);
       }
 
-      window.addEventListener('resize', resize);
-      resize();
-      draw();
+      function start() {
+        if (running) return;
+        running = true;
+        resize();
+        requestAnimationFrame(draw);
+      }
+
+      function stop() {
+        running = false;
+        splashes = [];
+        bctx.clearRect(0, 0, W, H);
+        fctx.clearRect(0, 0, W, H);
+      }
+
+      function setRain(on, remember) {
+        if (on) start(); else stop();
+        toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        document.documentElement.classList.toggle('rain-off', !on);
+        if (remember) {
+          try { localStorage.setItem('rain', on ? 'on' : 'off'); } catch (e) {}
+        }
+      }
+
+      toggle.addEventListener('click', function() {
+        setRain(!running, true);
+      });
+
+      window.addEventListener('resize', function() { if (running) resize(); });
+
+      // Default: on, unless the viewer prefers reduced motion; a saved choice wins
+      var saved = null;
+      try { saved = localStorage.getItem('rain'); } catch (e) {}
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setRain(saved ? saved === 'on' : !reduced, false);
+    })();
+
+    // Backdrop parallax: the far scene drifts slower than the page
+    (function() {
+      var bg = document.getElementById('backdrop');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function() {
+          bg.style.setProperty('--parallax', (-window.scrollY * 0.06) + 'px');
+          ticking = false;
+        });
+      }, { passive: true });
     })();
   </script>
 </body>

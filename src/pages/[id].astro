@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import TypeBadge from '../components/TypeBadge.astro';
 
 export async function getStaticPaths() {
   const materials = await getCollection('materials', ({ data }) => !data.draft);
@@ -31,7 +32,7 @@ function formatDate(date: Date) {
 
         <section data-component="detail-hero">
           <div data-slot="detail-meta-row">
-            <span data-slot="type-badge" data-type={item.data.type}>{item.data.type}</span>
+            <TypeBadge type={item.data.type} />
             <span data-slot="detail-date">{formatDate(item.data.date)}</span>
           </div>
           <h1>{item.data.title}</h1>
@@ -102,23 +103,8 @@ function formatDate(date: Date) {
           <Content />
         </section>
 
-        <footer data-component="footer">
-          <div data-slot="cell">
-            <a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">
-              GitHub
-            </a>
-          </div>
-          <div data-slot="cell">
-            <a href={base}>
-              Apostolos Tsampodimos
-            </a>
-          </div>
-        </footer>
       </div>
     </div>
 
-    <div data-component="legal">
-      <span>&copy; 2026 Apostolos Tsampodimos</span>
-    </div>
   </main>
 </Base>
