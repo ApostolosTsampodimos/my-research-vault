@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base title="About — Apostolos Tsampodimos" description="About Apostolos Tsampodimos and this research vault">
+  <main data-page="detail">
+    <div data-component="container">
+      <div data-component="content">
+        <div data-component="detail-nav">
+          <a href={`${base}/`}>&larr; Back</a>
+        </div>
+
+        <section data-component="detail-hero">
+          <h1>About</h1>
+        </section>
+
+        <!-- Placeholder copy: replace with your own bio -->
+        <section data-component="detail-section">
+          <p data-slot="detail-abstract">
+            I'm Apostolos Tsampodimos. This vault collects my talks, posters and Manim animations
+            in one place, with slides, source code and notes for each.
+          </p>
+        </section>
+
+        <section data-component="detail-content">
+          <h2>Research</h2>
+          <p>A short description of your research interests goes here.</p>
+
+          <h2>Contact</h2>
+          <ul>
+            <li><a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

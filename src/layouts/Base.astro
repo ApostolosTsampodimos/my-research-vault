@@ -11,7 +11,7 @@ const {
   description = 'My research vault — talks, animations, and posters by Apostolos Tsampodimos',
 } = Astro.props;
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +40,7 @@ const base = import.meta.env.BASE_URL;
     <nav data-slot="ground-sign">
       <a href="https://github.com/ApostolosTsampodimos" target="_blank" rel="noopener">GitHub</a>
       <span data-slot="ground-sep" aria-hidden="true">◆</span>
-      <a href={base}>Apostolos Tsampodimos</a>
+      <a href={`${base}/`}>Apostolos Tsampodimos</a>
     </nav>
     <div data-slot="ground-plane" aria-hidden="true">
       <div data-slot="ground-box">
@@ -93,8 +93,11 @@ const base = import.meta.env.BASE_URL;
         H = back.height = front.height = window.innerHeight;
         far = [];
         near = [];
-        for (var i = 0; i < W / 5; i++) far.push(farDrop(true));
-        for (var j = 0; j < W / 45; j++) near.push(nearDrop(true));
+        // Lighter rain on touch devices and data-saver connections
+        var lite = window.matchMedia('(pointer: coarse)').matches || (navigator.connection && navigator.connection.saveData);
+        var density = lite ? 0.55 : 1;
+        for (var i = 0; i < W / 5 * density; i++) far.push(farDrop(true));
+        for (var j = 0; j < W / 45 * density; j++) near.push(nearDrop(true));
 
         // Pool shape comes from the ground-box custom properties in global.css
         var cs = getComputedStyle(box);
@@ -165,12 +168,20 @@ const base = import.meta.env.BASE_URL;
         bctx.clearRect(0, 0, W, H);
         fctx.clearRect(0, 0, W, H);
 
+        bctx.strokeStyle = 'hsl(290,35%,72%)';
+
         // Far drops land in the back quarter of the pool, near drops further forward
         for (var i = 0; i < far.length; i++) {
           var d = far[i];
           fall(d);
           if (land(d, d.z * 0.5, r, visible, 0.5) || d.y - d.len > H) { far[i] = farDrop(false); continue; }
-          drawDrop(bctx, d, 'hsla(290,35%,72%,');
+          // Far drops are too thin for a gradient to show; a plain stroke is much cheaper
+          bctx.globalAlpha = d.alpha * 0.6; // ≈ the average of the old fading gradient
+          bctx.beginPath();
+          bctx.moveTo(d.x - d.len * WIND, d.y - d.len);
+          bctx.lineTo(d.x, d.y);
+          bctx.lineWidth = d.w;
+          bctx.stroke();
         }
 
         for (var j = 0; j < near.length; j++) {
