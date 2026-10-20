@@ -218,9 +218,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   max-width: 67.5rem;
   margin: 3.5rem auto 0;
   border: 2.5px solid var(--color-border-weak);
-  background: color-mix(in srgb, var(--color-background) 80%, transparent);
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
-  backdrop-filter: blur(10px) saturate(1.15);
+  /* No backdrop-filter: the rain canvas behind redraws every frame, which would
+     force the whole panel to be re-blurred every frame too */
+  background: color-mix(in srgb, var(--color-background) 88%, transparent);
   box-shadow:
     0 0 0 1px hsla(270, 30%, 3%, 0.6),
     0 30px 60px -10px hsla(270, 40%, 2%, 0.8),
@@ -343,7 +343,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     0 0 42px #ff1177,
     0 0 82px #ff1177,
     0 0 92px #ff1177;
-  transition: all 0.2s;
+  transition: color 0.2s, transform 0.2s, text-shadow 0.2s;
   animation: neon-flicker 4s infinite;
   position: relative;
 }
@@ -363,20 +363,10 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   text-decoration: none;
 }
 
+/* Opacity only: the compositor runs it, so the big text-shadow glow is never repainted */
 @keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow:
-      0 0 7px #ff1177,
-      0 0 10px #ff1177,
-      0 0 21px #ff1177,
-      0 0 42px #ff1177,
-      0 0 82px #ff1177,
-      0 0 92px #ff1177;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-    color: hsla(340, 100%, 60%, 0.4);
-  }
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.4; }
 }
 
 @media (max-width: 30rem) {
@@ -565,6 +555,10 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     0 0 10px #ff1177,
     0 0 21px #ff1177,
     0 0 42px #ff1177;
+}
+
+/* Flicker the label, not the button, so the plate behind it stays lit */
+[data-slot="filter-btn"].active [data-slot="filter-label"] {
   animation: neon-flicker 4s infinite;
 }
 

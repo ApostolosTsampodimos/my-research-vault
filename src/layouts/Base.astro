@@ -102,7 +102,14 @@ const imageUrl = new URL(previewImage.src, Astro.site);
         };
       }
 
-      function farDrop(randomY) { return makeDrop(Math.random() * 0.5, randomY); }
+      // Far drops are drawn in FAR_LAYERS batches, one stroke per layer, so each
+      // layer shares one alpha and width
+      var FAR_LAYERS = 5;
+      function farDrop(randomY) {
+        var d = makeDrop(Math.random() * 0.5, randomY);
+        d.layer = Math.min(FAR_LAYERS - 1, Math.floor(d.z / 0.5 * FAR_LAYERS));
+        return d;
+      }
       function nearDrop(randomY) { return makeDrop(0.55 + Math.random() * 0.45, randomY); }
 
       function resize() {
@@ -126,7 +133,23 @@ const imageUrl = new URL(previewImage.src, Astro.site);
           rimFar: parseFloat(cs.getPropertyValue('--rim-far')),
           rimNear: parseFloat(cs.getPropertyValue('--rim-near'))
         };
+        measureBox();
       }
+
+      // The pool's page position, cached so draw() never forces a layout; only
+      // scrollY changes per frame. Re-measured whenever the page height changes.
+      var boxPage = null;
+      function measureBox() {
+        var r = box.getBoundingClientRect();
+        boxPage = { top: r.top + window.scrollY, left: r.left, width: r.width, height: r.height };
+      }
+
+      function boxRect() {
+        var top = boxPage.top - window.scrollY;
+        return { top: top, bottom: top + boxPage.height, left: boxPage.left, right: boxPage.left + boxPage.width, width: boxPage.width };
+      }
+
+      new ResizeObserver(function() { if (running) measureBox(); }).observe(document.body);
 
       // Water surface at depth t (0 = far edge, 1 = near edge): its y and x extent
       function waterAt(t, r) {
@@ -179,25 +202,32 @@ const imageUrl = new URL(previewImage.src, Astro.site);
 
       function draw() {
         if (!running) return;
-        var r = box.getBoundingClientRect();
+        var r = boxRect();
         var visible = r.top < H;
 
         bctx.clearRect(0, 0, W, H);
         fctx.clearRect(0, 0, W, H);
 
-        bctx.strokeStyle = 'hsl(290,35%,72%)';
-
         // Far drops land in the back quarter of the pool, near drops further forward
         for (var i = 0; i < far.length; i++) {
           var d = far[i];
           fall(d);
-          if (land(d, d.z * 0.5, r, visible, 0.5) || d.y - d.len > H) { far[i] = farDrop(false); continue; }
-          // Far drops are too thin for a gradient to show; a plain stroke is much cheaper
-          bctx.globalAlpha = d.alpha * 0.6; // ≈ the average of the old fading gradient
+          if (land(d, d.z * 0.5, r, visible, 0.5) || d.y - d.len > H) { far[i] = d = farDrop(false); }
+        }
+
+        // Far drops are too thin for a gradient to show: plain strokes, one path per layer
+        bctx.strokeStyle = 'hsl(290,35%,72%)';
+        for (var l = 0; l < FAR_LAYERS; l++) {
+          var lz = (l + 0.5) / FAR_LAYERS * 0.5;
+          bctx.globalAlpha = (0.15 + lz * 0.45) * 0.6; // ≈ the average of a fading gradient
+          bctx.lineWidth = 0.4 + lz * 1.2;
           bctx.beginPath();
-          bctx.moveTo(d.x - d.len * WIND, d.y - d.len);
-          bctx.lineTo(d.x, d.y);
-          bctx.lineWidth = d.w;
+          for (var f = 0; f < far.length; f++) {
+            var fd = far[f];
+            if (fd.layer !== l) continue;
+            bctx.moveTo(fd.x - fd.len * WIND, fd.y - fd.len);
+            bctx.lineTo(fd.x, fd.y);
+          }
           bctx.stroke();
         }
 
