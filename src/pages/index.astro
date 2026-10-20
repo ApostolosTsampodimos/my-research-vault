@@ -80,7 +80,7 @@ function formatDate(date: Date) {
                 data-type={t}
               >
                 <span data-slot="filter-plate" aria-hidden="true"></span>
-                <span data-slot="filter-label">{t === 'all' ? 'All' : t} <span data-slot="filter-count">{count}</span></span>
+                <span data-slot="filter-label">{t === 'all' ? 'All' : `${t}s`} <span data-slot="filter-count">{count}</span></span>
               </button>
             );
           })}

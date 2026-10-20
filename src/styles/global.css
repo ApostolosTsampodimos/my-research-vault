@@ -709,7 +709,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   overflow: hidden;
   cursor: pointer;
   z-index: 1;
+  interpolate-size: allow-keywords;
   transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -750,12 +752,18 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   filter: drop-shadow(0 0 4px currentColor);
 }
 
-/* Only real images zoom; a placeholder has nothing to enlarge */
+/* Only real images zoom; a placeholder has nothing to enlarge.
+   The tile takes the image's own proportions so nothing is cropped. */
 [data-slot="material-thumb"]:has(img):hover {
+  height: auto;
   transform: translate(calc(-100% - 1.25rem), -50%) scale(2.4);
   z-index: 20;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5),
               0 0 0 1px var(--color-border-weak);
+}
+
+[data-slot="material-thumb"]:hover img {
+  height: auto;
 }
 
 @media (max-width: 75rem) {
