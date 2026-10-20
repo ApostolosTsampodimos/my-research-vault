@@ -41,7 +41,26 @@ Optional extended notes in Markdown.
 
 The `abstract` field is shown under **Abstract** (**Description** for animations).
 Everything below the closing `---` is shown under **Notes & comments**, for your own
-comments; the section is hidden while the body is empty or only contains HTML comments.
+comments. The section appears on every page; while the body is empty (or only HTML comments) it shows as blank space.
+
+### Talks with an expanded version
+
+Give a talk both `pdf` (the slides as presented) and `pdfExpanded` (the longer cut).
+The page then shows a **Slides** section with the title slide (`thumbnail`) and a
+download card for each version, labelled *Normal* and *Expanded*:
+
+```markdown
+pdf: /assets/pdfs/talk-name.pdf
+pdfExpanded: /assets/pdfs/talk-name-expanded.pdf
+thumbnail: /assets/thumbnails/talk-name.jpg   # also used as the card image on the front page
+```
+
+Render the title slide with:
+
+```bash
+pdftoppm -f 1 -l 1 -singlefile -scale-to 1600 -jpeg -jpegopt quality=85 \
+  public/assets/pdfs/talk-name.pdf public/assets/thumbnails/talk-name
+```
 
 ### Papers
 

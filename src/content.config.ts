@@ -11,6 +11,7 @@ const materials = defineCollection({
     // Paths under public/ — e.g. /slides/talk-name/ or /assets/pdfs/talk.pdf
     slides: z.string().optional(),
     pdf: z.string().optional(),
+    pdfExpanded: z.string().optional(), // talks: longer cut of the slides, shown beside `pdf`
     video: z.string().optional(),
     thumbnail: z.string().optional(),
     abstract: z.string().optional(),

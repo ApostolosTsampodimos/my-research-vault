@@ -1280,11 +1280,106 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   display: block;
 }
 
+/* ── Detail: slide versions (as presented / expanded) ─────── */
+[data-component="detail-formats"] {
+  border-top: 2.5px solid var(--color-border-weak);
+  padding: var(--vertical-padding) var(--padding);
+}
+
+/* Title slide on the left, the two downloads stacked on its right */
+[data-slot="format-layout"] {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 640px) {
+  [data-slot="format-layout"] {
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-slot="format-cover"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 2.5px solid var(--color-border-weak);
+  border-radius: 6px;
+}
+
+[data-slot="format-options"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+/* Compact download row: version tag on the left, call to action on the right.
+   Scoped under [data-page] to beat the global link underline, which cut the tag border */
+[data-page] [data-slot="format-option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 2px solid rgba(255, 17, 119, 0.45);
+  border-radius: 6px;
+  color: var(--color-text-weak);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+[data-page] [data-slot="format-option"]:hover {
+  border-color: #ff1177;
+  background: var(--color-background-weak);
+  box-shadow: 0 0 8px rgba(255, 17, 119, 0.3);
+  text-decoration: none;
+}
+
+[data-slot="format-option"]:focus-visible {
+  outline: 2px solid #ff1177;
+  outline-offset: 2px;
+}
+
+[data-slot="format-tag"] {
+  font-family: 'Russo One', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ff1177;
+  border: 1.5px solid #ff1177;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  line-height: 1.4;
+}
+
+[data-slot="format-cta"] {
+  font-family: 'Russo One', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-weak);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+[data-slot="format-option"]:hover [data-slot="format-cta"] {
+  color: var(--color-text-strong);
+  text-shadow: 0 0 6px rgba(255, 17, 119, 0.6);
+}
+
 /* ── Detail: content (rendered markdown) ───────────────────── */
 [data-component="detail-content"] {
   border-top: 2.5px solid var(--color-border-weak);
   padding: var(--vertical-padding) var(--padding);
   line-height: 200%;
+}
+
+/* Nothing written yet: keep the section open as blank space */
+[data-component="detail-content"][data-empty] {
+  min-height: 12rem;
 }
 
 [data-component="detail-content"] h2 {

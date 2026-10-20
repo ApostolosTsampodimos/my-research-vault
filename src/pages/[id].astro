@@ -13,10 +13,25 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const { Content } = await render(item);
-// The Markdown body is the free-form notes section; HTML comments alone don't count
+// The Markdown body fills the notes section, shown on every page; HTML comments alone don't count
 const hasNotes = (item.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const asset = (path: string) => `${base}/${path.replace(/^\//, '')}`;
+
+// Talks with an expanded cut get a slides viewer that switches between the two PDFs
+const formats = item.data.pdf && item.data.pdfExpanded ? [
+  {
+    key: 'presented',
+    label: 'Normal',
+    href: asset(item.data.pdf),
+  },
+  {
+    key: 'expanded',
+    label: 'Expanded',
+    href: asset(item.data.pdfExpanded),
+  },
+] : [];
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('en', {
@@ -56,7 +71,31 @@ function formatDate(date: Date) {
           </section>
         )}
 
-        {(item.data.slides || item.data.pdf || item.data.arxiv || item.data.doi) && (
+        {formats.length > 0 && (
+          <section data-component="detail-formats">
+            <h2 data-slot="section-label">Slides</h2>
+            <div data-slot="format-layout">
+              {item.data.thumbnail && (
+                <img
+                  src={asset(item.data.thumbnail)}
+                  alt={`Title slide: ${item.data.title}`}
+                  data-slot="format-cover"
+                  loading="lazy"
+                />
+              )}
+              <div data-slot="format-options">
+                {formats.map(f => (
+                  <a href={f.href} data-slot="format-option" download>
+                    <span data-slot="format-tag">{f.label}</span>
+                    <span data-slot="format-cta">Download PDF</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {(item.data.slides || (item.data.pdf && formats.length === 0) || item.data.arxiv || item.data.doi) && (
           <section data-component="detail-actions">
             {item.data.slides && (
               <a
@@ -68,7 +107,7 @@ function formatDate(date: Date) {
                 Open slides
               </a>
             )}
-            {item.data.pdf && (
+            {item.data.pdf && formats.length === 0 && (
               <a
                 href={`${base}/${item.data.pdf.replace(/^\//, '')}`}
                 data-slot="action-btn"
@@ -120,15 +159,14 @@ function formatDate(date: Date) {
           </section>
         )}
 
-        {hasNotes && (
-          <section data-component="detail-content">
-            <h2 data-slot="section-label">Notes &amp; comments</h2>
-            <Content />
-          </section>
-        )}
+        <section data-component="detail-content" data-empty={hasNotes ? undefined : ''}>
+          <h2 data-slot="section-label">Notes &amp; comments</h2>
+          <Content />
+        </section>
 
       </div>
     </div>
 
   </main>
 </Base>
+
