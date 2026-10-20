@@ -253,20 +253,62 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   gap: 1rem;
 }
 
-[data-slot="hero-github"] {
+/* Icon links (hero GitHub, About contacts): dim until hovered, then neon pink */
+[data-slot="hero-github"],
+[data-page] [data-slot="contact-icon"] {
   color: var(--color-text-weaker);
   text-decoration: none;
   transition: color 0.2s;
 }
 
-[data-slot="hero-github"]:hover {
+[data-slot="hero-github"]:hover,
+[data-page] [data-slot="contact-icon"]:hover,
+[data-page] [data-slot="contact-icon"]:focus-visible {
   color: #ff1177;
   text-decoration: none;
   filter: drop-shadow(0 0 8px #ff1177) drop-shadow(0 0 20px #ff1177);
 }
 
-[data-slot="hero-github"]:hover svg {
+[data-slot="hero-github"]:hover svg,
+[data-slot="contact-icon"]:not([data-icon="mail"]):hover svg {
   animation: spin-once 0.6s ease-in-out;
+}
+
+[data-slot="contact-links"] {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 0.5rem 0 0.25rem;
+}
+
+[data-slot="contact-icon"] {
+  display: inline-flex;
+  outline: none;
+}
+
+/* Mail: the envelope lifts while its flap swings open and shut */
+[data-slot="contact-icon"][data-icon="mail"]:hover svg {
+  animation: envelope-lift 0.6s ease-in-out;
+}
+
+[data-slot="contact-icon"] [data-part="flap"] {
+  transform-box: view-box;
+  transform-origin: 12px 6px;
+}
+
+[data-slot="contact-icon"][data-icon="mail"]:hover [data-part="flap"] {
+  animation: flap-open 0.6s ease-in-out;
+}
+
+@keyframes envelope-lift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(-3px) rotate(-6deg); }
+  70% { transform: translateY(-1px) rotate(3deg); }
+}
+
+@keyframes flap-open {
+  0%, 100% { transform: scaleY(1); }
+  45%, 60% { transform: scaleY(-1); }
 }
 
 @keyframes spin-once {
