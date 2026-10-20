@@ -1287,10 +1287,16 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   display: flex;
 }
 
+/* Equal-width cells with labels centred both ways, so a wrapped neighbour
+   never leaves a one-line label sitting at the top */
 [data-slot="action-btn"] {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 1.5rem var(--padding);
+  padding: 1.5rem 1rem;
   color: var(--color-text-weak);
   text-decoration: none;
   font: inherit;
@@ -1304,6 +1310,16 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   color: var(--color-text-strong);
   background: var(--color-background-weak);
   text-decoration: none;
+}
+
+/* Cite: a soft blue, the complement of the warm paper orange */
+[data-slot="action-btn"][data-cite] {
+  color: #8db8ec;
+}
+
+[data-slot="action-btn"][data-cite]:hover {
+  color: #b4d1f5;
+  background: color-mix(in srgb, #8db8ec 8%, var(--color-background-weak));
 }
 
 [data-slot="action-btn"] + [data-slot="action-btn"] {
@@ -1498,3 +1514,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   color: var(--color-text-strong);
 }
 
+
+/* ── Maths (KaTeX) ─────────────────────────────────────────── */
+/* KaTeX's default 1.21em towers over the monospace body text */
+.katex {
+  font-size: 1.08em;
+}

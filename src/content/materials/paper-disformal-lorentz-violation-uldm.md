@@ -4,6 +4,7 @@ date: 2026-02-09
 type: paper
 venue: "Phys. Rev. D 113, 035007 (2026)"
 authors: ["Guillem Domènech", "Alexander Ganz", "Fiona Kirk", "Nathaniel Sherrill", "Apostolos Tsampodimos"]
+arxiv: "2510.07490"
 doi: "10.1103/l559-n7dk"
 pdf: /assets/pdfs/disformal-lorentz-violation-uldm.pdf
 abstract: >

@@ -43,6 +43,9 @@ The `abstract` field is shown under **Abstract** (**Description** for animations
 Everything below the closing `---` is shown under **Notes & comments**, for your own
 comments. The section appears on every page; while the body is empty (or only HTML comments) it shows as blank space.
 
+Both the abstract and the notes accept LaTeX: `$…$` inline and `$$…$$` displayed, rendered
+with KaTeX at build time. Write `\$` for a literal dollar sign.
+
 ### Talks with an expanded version
 
 Give a talk both `pdf` (the slides as presented) and `pdfExpanded` (the longer cut).

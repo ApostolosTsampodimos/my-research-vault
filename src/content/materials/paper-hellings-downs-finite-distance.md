@@ -4,21 +4,22 @@ date: 2024-10-07
 type: paper
 venue: "Eur. Phys. J. C 84, 1005 (2024)"
 authors: ["Guillem Domènech", "Apostolos Tsampodimos"]
+arxiv: "2407.21567"
 doi: "10.1140/epjc/s10052-024-13418-w"
 pdf: /assets/pdfs/hellings-downs-finite-distance.pdf
 abstract: >
   There is growing interest in the overlap reduction function in pulsar timing array
   observations as a probe of modified gravity. However, current approximations to the
-  Hellings–Downs curve for subluminal gravitational wave propagation, say v < 1, diverge
+  Hellings–Downs curve for subluminal gravitational wave propagation, say $v < 1$, diverge
   at small angular pulsar separation. In this paper, we find that the overlap reduction
-  function for the v < 1 case is sensitive to finite distance effects. First, we show
+  function for the $v < 1$ case is sensitive to finite distance effects. First, we show
   that finite distance effects introduce an effective cut-off in the spherical harmonics
-  decomposition at ℓ ∼ √(1 − v²) kL, where ℓ is the multipole number, k the wavenumber
-  of the gravitational wave and L the distance to the pulsars. Then, we find that the
+  decomposition at $\ell \sim \sqrt{1 - v^2}\, kL$, where $\ell$ is the multipole number, $k$ the wavenumber
+  of the gravitational wave and $L$ the distance to the pulsars. Then, we find that the
   overlap reduction function in the small angle limit approaches a value given by
-  πkL v² (1 − v²)² times a normalization factor, exactly matching the value for the
-  autocorrelation recently derived. Although we focus on the v < 1 case, our formulation
-  is valid for any value of v.
+  $\pi kL\, v^2 (1 - v^2)^2$ times a normalization factor, exactly matching the value for the
+  autocorrelation recently derived. Although we focus on the $v < 1$ case, our formulation
+  is valid for any value of $v$.
 tags: ["pulsar timing arrays", "gravitational waves", "Hellings–Downs", "modified gravity"]
 ---
 

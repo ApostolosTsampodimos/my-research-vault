@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import TypeBadge from '../components/TypeBadge.astro';
+import { renderMath, stripMath } from '../lib/math';
 
 export async function getStaticPaths() {
   const materials = await getCollection('materials', ({ data }) => !data.draft);
@@ -73,7 +74,7 @@ function formatDate(date: Date) {
   });
 }
 ---
-<Base title={`${item.data.title} — Apostolos Tsampodimos`} description={item.data.abstract}>
+<Base title={`${item.data.title} — Apostolos Tsampodimos`} description={item.data.abstract && stripMath(item.data.abstract)}>
   <main data-page="detail">
     <div data-component="container">
       <div data-component="content">
@@ -101,7 +102,7 @@ function formatDate(date: Date) {
         {item.data.abstract && (
           <section data-component="detail-section">
             <h2 data-slot="section-label">{item.data.type === 'animation' ? 'Description' : 'Abstract'}</h2>
-            <p data-slot="detail-abstract">{item.data.abstract}</p>
+            <p data-slot="detail-abstract" set:html={renderMath(item.data.abstract)} />
           </section>
         )}
 

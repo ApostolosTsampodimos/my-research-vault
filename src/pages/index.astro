@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import TypeBadge from '../components/TypeBadge.astro';
+import { renderMath, stripMath } from '../lib/math';
 
 const allMaterials = await getCollection('materials', ({ data }) => !data.draft);
 allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -100,7 +101,7 @@ function formatDate(date: Date) {
             <a
               data-component="material"
               data-type={item.data.type}
-              data-search={[item.data.title, item.data.venue, item.data.abstract, ...item.data.authors, ...item.data.tags].filter(Boolean).join(' ').toLowerCase()}
+              data-search={[item.data.title, item.data.venue, item.data.abstract && stripMath(item.data.abstract), ...item.data.authors, ...item.data.tags].filter(Boolean).join(' ').toLowerCase()}
               href={`${base}/${item.id}/`}
             >
               <div data-slot="material-thumb" data-type={item.data.type}>
@@ -122,7 +123,7 @@ function formatDate(date: Date) {
                   <span data-slot="material-venue">{item.data.venue}</span>
                 )}
                 {item.data.abstract && (
-                  <span data-slot="material-abstract">{item.data.abstract}</span>
+                  <span data-slot="material-abstract" set:html={renderMath(item.data.abstract)} />
                 )}
               </div>
               <TypeBadge type={item.data.type} />
