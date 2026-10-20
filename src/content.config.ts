@@ -19,6 +19,7 @@ const materials = defineCollection({
     authors: z.array(z.string()).default([]),
     arxiv: z.string().optional(),   // arXiv id, e.g. 2401.01234
     doi: z.string().optional(),     // e.g. 10.1103/PhysRevD.109.024001
+    bibtex: z.string().optional(),  // full entry, e.g. from INSPIRE; replaces the generated one
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),

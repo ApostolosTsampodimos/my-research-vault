@@ -269,6 +269,13 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   filter: drop-shadow(0 0 8px #ff1177) drop-shadow(0 0 20px #ff1177);
 }
 
+/* ORCID glows in its own green rather than pink */
+[data-page] [data-slot="contact-icon"][data-icon="orcid"]:hover,
+[data-page] [data-slot="contact-icon"][data-icon="orcid"]:focus-visible {
+  color: #a6ce39;
+  filter: drop-shadow(0 0 8px #a6ce39) drop-shadow(0 0 20px #a6ce39);
+}
+
 [data-slot="hero-github"]:hover svg,
 [data-slot="contact-icon"]:not([data-icon="mail"]):hover svg {
   animation: spin-once 0.6s ease-in-out;
@@ -1292,6 +1299,10 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   padding: 1.5rem var(--padding);
   color: var(--color-text-weak);
   text-decoration: none;
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
 

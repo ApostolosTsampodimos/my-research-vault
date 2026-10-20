@@ -33,6 +33,40 @@ const formats = item.data.pdf && item.data.pdfExpanded ? [
   },
 ] : [];
 
+// Papers get a Cite button that copies a BibTeX entry; a `bibtex` field in the frontmatter overrides it
+function buildBibtex() {
+  const { title, authors, date, venue, doi, arxiv } = item.data;
+  const year = date.getFullYear();
+  const ascii = (s: string) => s.normalize('NFD').replace(/[^A-Za-z]/g, '');
+  const surname = (name: string) => name.trim().split(/\s+/).pop() ?? '';
+  const stopwords = new Set(['a', 'an', 'the', 'on', 'of', 'in', 'for', 'and', 'to']);
+  const keyword = title.split(/\s+/).map(ascii).find(w => w && !stopwords.has(w.toLowerCase())) ?? '';
+  const key = `${ascii(surname(authors[0] ?? 'Tsampodimos'))}${year}${keyword.toLowerCase()}`;
+  // "Phys. Rev. D 113, 035007 (2026)" → "Phys. Rev. D"; preprints have no journal
+  const journal = venue && venue !== 'Preprint' ? venue.match(/^(.*?)\s+\d/)?.[1] ?? venue : undefined;
+
+  const fields: [string, string | number | undefined][] = [
+    ['author', authors.map(a => {
+      const last = surname(a);
+      const first = a.trim().slice(0, -last.length).trim();
+      return first ? `${last}, ${first}` : last;
+    }).join(' and ')],
+    ['title', `{${title}}`],
+    ['journal', journal],
+    ['year', year],
+    ['doi', doi],
+    ['eprint', arxiv],
+    ['archivePrefix', arxiv && 'arXiv'],
+  ];
+  const body = fields
+    .filter(([, v]) => v !== undefined && v !== '')
+    .map(([k, v]) => `  ${k} = {${v}}`)
+    .join(',\n');
+  return `@${journal ? 'article' : 'misc'}{${key},\n${body}\n}`;
+}
+
+const bibtex = item.data.type === 'paper' ? (item.data.bibtex?.trim() ?? buildBibtex()) : undefined;
+
 function formatDate(date: Date) {
   return date.toLocaleDateString('en', {
     year: 'numeric', month: 'long', day: 'numeric',
@@ -95,7 +129,7 @@ function formatDate(date: Date) {
           </section>
         )}
 
-        {(item.data.slides || (item.data.pdf && formats.length === 0) || item.data.arxiv || item.data.doi) && (
+        {(item.data.slides || (item.data.pdf && formats.length === 0) || item.data.arxiv || item.data.doi || bibtex) && (
           <section data-component="detail-actions">
             {item.data.slides && (
               <a
@@ -136,6 +170,11 @@ function formatDate(date: Date) {
                 Journal (DOI)
               </a>
             )}
+            {bibtex && (
+              <button type="button" data-slot="action-btn" data-cite={bibtex} title="Copy BibTeX to clipboard">
+                Cite
+              </button>
+            )}
           </section>
         )}
 
@@ -169,4 +208,17 @@ function formatDate(date: Date) {
 
   </main>
 </Base>
+
+<script>
+  const cite = document.querySelector<HTMLButtonElement>('[data-cite]');
+  cite?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(cite.dataset.cite!);
+      cite.textContent = 'BibTeX copied';
+    } catch {
+      cite.textContent = 'Copy failed';
+    }
+    setTimeout(() => { cite.textContent = 'Cite'; }, 2000);
+  });
+</script>
 
