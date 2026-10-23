@@ -58,6 +58,13 @@ body {
   background: var(--color-background);
   color: var(--color-text);
   min-height: 100dvh;
+  /* Column layout so the ground footer sits at the bottom even on short pages */
+  display: flex;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
 }
 
 
@@ -276,8 +283,15 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   filter: drop-shadow(0 0 8px #a6ce39) drop-shadow(0 0 20px #a6ce39);
 }
 
+/* INSPIRE glows neon blue, in the family of the Cite button */
+[data-page] [data-slot="contact-icon"][data-icon="inspire"]:hover,
+[data-page] [data-slot="contact-icon"][data-icon="inspire"]:focus-visible {
+  color: #5cb6ff;
+  filter: drop-shadow(0 0 8px #2f8fff) drop-shadow(0 0 20px #2f8fff);
+}
+
 [data-slot="hero-github"]:hover svg,
-[data-slot="contact-icon"]:not([data-icon="mail"]):hover svg {
+[data-slot="contact-icon"]:not([data-icon="mail"], [data-icon="inspire"]):hover svg {
   animation: spin-once 0.6s ease-in-out;
 }
 
@@ -305,6 +319,36 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 
 [data-slot="contact-icon"][data-icon="mail"]:hover [data-part="flap"] {
   animation: flap-open 0.6s ease-in-out;
+}
+
+/* INSPIRE: the dot of the i is flung off like a particle and falls back,
+   while the tile outline pulses out as a detector flash.
+   Lengths are in the logo's own units (388 across) */
+[data-slot="contact-icon"] [data-part="dot"],
+[data-slot="contact-icon"] [data-part="ring"] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* The dot keeps the logo's cyan, against the blue of the letters */
+[data-slot="contact-icon"][data-icon="inspire"]:hover [data-part="dot"] {
+  fill: #01e5fe;
+  animation: particle-hop 0.7s cubic-bezier(0.3, 0, 0.4, 1);
+}
+
+[data-slot="contact-icon"][data-icon="inspire"]:hover [data-part="ring"] {
+  animation: detector-pulse 0.7s ease-out;
+}
+
+@keyframes particle-hop {
+  0%, 100% { transform: translate(0, 0); }
+  35% { transform: translate(-16px, -80px) scale(1.4); }
+  70% { transform: translate(0, 10px); }
+}
+
+@keyframes detector-pulse {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.1); stroke-width: 18; }
 }
 
 @keyframes envelope-lift {
