@@ -7,6 +7,7 @@ authors: ["Guillem Domènech", "Alexander Ganz", "Fiona Kirk", "Nathaniel Sherri
 arxiv: "2510.07490"
 doi: "10.1103/l559-n7dk"
 pdf: /assets/pdfs/disformal-lorentz-violation-uldm.pdf
+thumbnail: /assets/thumbnails/disformal-lorentz-violation-uldm.jpg
 abstract: >
   We study the impact of general disformal metric transformations on fermions, which shift
   the gravitational metric by an additional rank-2 tensor. This tensor can in principle be
@@ -26,7 +27,3 @@ tags: ["disformal", "Lorentz violation", "ultralight dark matter", "fermions", "
   Notes & comments: anything you write below this comment appears on the
   paper's page under "Notes & comments". Markdown is supported.
 -->
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

@@ -7,6 +7,7 @@ authors: ["Guillem Domènech", "Alexander Ganz", "Apostolos Tsampodimos"]
 arxiv: "2510.07419"
 doi: "10.1088/1475-7516/2026/02/045"
 pdf: /assets/pdfs/consistent-disformal-fermions.pdf
+thumbnail: /assets/thumbnails/consistent-disformal-fermions.jpg
 abstract: >
   Disformal couplings to fermions lead to a unique derivative coupling to the axial
   fermionic current, which contains higher derivatives in general. We derive general
@@ -27,7 +28,3 @@ tags: ["disformal", "fermions", "modified gravity", "Horndeski", "DHOST", "Proca
   Notes & comments: anything you write below this comment appears on the
   paper's page under "Notes & comments". Markdown is supported.
 -->
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

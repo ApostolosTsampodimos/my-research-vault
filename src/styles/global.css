@@ -1381,6 +1381,22 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   border-radius: 6px;
 }
 
+/* Posters are portrait: a narrower column, shown whole rather than cropped to 16:9 */
+[data-slot="format-layout"][data-poster] {
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+}
+
+[data-slot="format-layout"][data-poster] [data-slot="format-cover"] {
+  aspect-ratio: auto;
+}
+
+@media (max-width: 640px) {
+  [data-slot="format-layout"][data-poster] {
+    grid-template-columns: minmax(0, 18rem);
+    justify-content: center;
+  }
+}
+
 [data-slot="format-options"] {
   display: flex;
   flex-direction: column;

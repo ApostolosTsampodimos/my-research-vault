@@ -20,7 +20,9 @@ const hasNotes = (item.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const asset = (path: string) => `${base}/${path.replace(/^\//, '')}`;
 
-// Talks with an expanded cut get a slides viewer that switches between the two PDFs
+// Talks with an expanded cut get a slides viewer that switches between the two PDFs;
+// posters get the same viewer with the poster as the cover and a single download
+const isPoster = item.data.type === 'poster';
 const formats = item.data.pdf && item.data.pdfExpanded ? [
   {
     key: 'presented',
@@ -31,6 +33,12 @@ const formats = item.data.pdf && item.data.pdfExpanded ? [
     key: 'expanded',
     label: 'Expanded',
     href: asset(item.data.pdfExpanded),
+  },
+] : isPoster && item.data.pdf ? [
+  {
+    key: 'poster',
+    label: 'Full size',
+    href: asset(item.data.pdf),
   },
 ] : [];
 
@@ -108,12 +116,12 @@ function formatDate(date: Date) {
 
         {formats.length > 0 && (
           <section data-component="detail-formats">
-            <h2 data-slot="section-label">Slides</h2>
-            <div data-slot="format-layout">
+            <h2 data-slot="section-label">{isPoster ? 'Poster' : 'Slides'}</h2>
+            <div data-slot="format-layout" data-poster={isPoster || undefined}>
               {item.data.thumbnail && (
                 <img
                   src={asset(item.data.thumbnail)}
-                  alt={`Title slide: ${item.data.title}`}
+                  alt={isPoster ? `Poster: ${item.data.title}` : `Title slide: ${item.data.title}`}
                   data-slot="format-cover"
                   loading="lazy"
                 />
