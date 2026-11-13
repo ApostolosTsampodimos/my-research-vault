@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 // Personal website, linked from the neon button in the top-right corner
-// The button stays hidden until this is set
+// Until this is set, the button shows "Coming soon" on hover and links nowhere
 const personalUrl = ''; // TODO: personal homepage URL
 ---
 <Base title="About — Apostolos Tsampodimos" description="About Apostolos Tsampodimos and this research vault">
@@ -15,7 +15,12 @@ const personalUrl = ''; // TODO: personal homepage URL
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
             All materials
           </a>
-          {personalUrl && <a href={personalUrl} target="_blank" rel="noopener" data-slot="neon-btn">Homepage</a>}
+          {personalUrl
+            ? <a href={personalUrl} target="_blank" rel="noopener" data-slot="neon-btn">Homepage</a>
+            : <span data-slot="neon-btn" data-soon tabindex="0" aria-label="Homepage, coming soon">
+                <span data-slot="soon-label" aria-hidden="true">Homepage</span>
+                <span data-slot="soon-hover" aria-hidden="true">Coming soon</span>
+              </span>}
         </div>
 
         <section data-component="detail-hero">

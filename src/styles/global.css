@@ -406,6 +406,36 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   position: relative;
 }
 
+/* Not-yet-linked neon button: the label swaps to "Coming soon" on hover, without growing.
+   Both texts share one grid cell so the width never jumps; it sits right-aligned */
+[data-slot="neon-btn"][data-soon] {
+  display: inline-grid;
+  justify-items: end;
+  cursor: default;
+}
+
+[data-slot="neon-btn"][data-soon] > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.2s;
+}
+
+[data-slot="soon-hover"],
+[data-slot="neon-btn"][data-soon]:hover [data-slot="soon-label"],
+[data-slot="neon-btn"][data-soon]:focus-visible [data-slot="soon-label"] {
+  opacity: 0;
+}
+
+[data-slot="neon-btn"][data-soon]:hover [data-slot="soon-hover"],
+[data-slot="neon-btn"][data-soon]:focus-visible [data-slot="soon-hover"] {
+  opacity: 1;
+}
+
+[data-slot="neon-btn"][data-soon]:hover,
+[data-slot="neon-btn"][data-soon]:focus-visible {
+  outline: none;
+  transform: none;
+}
+
 [data-slot="neon-btn"]:hover {
   color: #fff;
   transform: scale(1.15);
