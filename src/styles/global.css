@@ -1253,6 +1253,14 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   padding: 1.75rem var(--padding) 0;
 }
 
+/* Back link on the left, a neon button on the right (about page) */
+[data-component="detail-nav"][data-split] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 /* Back: a quiet caption in the section-label style; the chevron lights up on hover */
 [data-page] [data-slot="back-link"] {
   display: inline-flex;
