@@ -27,6 +27,14 @@ diagrams:
     image: /assets/diagrams/qft-part-4/qcd-quark-quark-scattering.png
     tex: /assets/diagrams/qft-part-4/qcd-quark-quark-scattering.tex
     pdf: /assets/diagrams/qft-part-4/qcd-quark-quark-scattering.pdf
+  - name: qcd-quark-antiquark-to-gluons-s-channel
+    image: /assets/diagrams/qft-part-4/qcd-quark-antiquark-to-gluons-s-channel.png
+    tex: /assets/diagrams/qft-part-4/qcd-quark-antiquark-to-gluons-s-channel.tex
+    pdf: /assets/diagrams/qft-part-4/qcd-quark-antiquark-to-gluons-s-channel.pdf
+  - name: pentaquark-proton-jpsi-scattering
+    image: /assets/diagrams/qft-part-4/pentaquark-proton-jpsi-scattering.png
+    tex: /assets/diagrams/qft-part-4/pentaquark-proton-jpsi-scattering.tex
+    pdf: /assets/diagrams/qft-part-4/pentaquark-proton-jpsi-scattering.pdf
 tags: ["quantum field theory", "QED", "QCD", "Feynman diagrams", "pentaquarks"]
 ---
 
