@@ -15,6 +15,13 @@ const materials = defineCollection({
     video: z.string().optional(),
     thumbnail: z.string().optional(),
     abstract: z.string().optional(),
+    // Diagrams shown as tiles under "Notes & comments": a preview image plus downloadable sources
+    diagrams: z.array(z.object({
+      name: z.string(),            // e.g. electron-muon-scattering
+      image: z.string(),           // preview, e.g. /assets/diagrams/talk/electron-muon-scattering.png
+      tex: z.string().optional(),  // LaTeX/TikZ source
+      pdf: z.string().optional(),  // compiled diagram
+    })).default([]),
     // Papers
     authors: z.array(z.string()).default([]),
     arxiv: z.string().optional(),   // arXiv id, e.g. 2401.01234

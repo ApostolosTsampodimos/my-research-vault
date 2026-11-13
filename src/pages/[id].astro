@@ -23,7 +23,7 @@ const asset = (path: string) => `${base}/${path.replace(/^\//, '')}`;
 // Talks with an expanded cut get a slides viewer that switches between the two PDFs;
 // posters get the same viewer with the poster as the cover and a single download
 const isPoster = item.data.type === 'poster';
-const formats = item.data.pdf && item.data.pdfExpanded ? [
+const formats = item.data.pdf && (item.data.pdfExpanded || item.data.type === 'talk') ? [
   {
     key: 'presented',
     label: 'Normal',
@@ -32,7 +32,8 @@ const formats = item.data.pdf && item.data.pdfExpanded ? [
   {
     key: 'expanded',
     label: 'Expanded',
-    href: asset(item.data.pdfExpanded),
+    // Talks without an expanded cut yet show this option disabled
+    href: item.data.pdfExpanded ? asset(item.data.pdfExpanded) : undefined,
   },
 ] : isPoster && item.data.pdf ? [
   {
@@ -128,10 +129,17 @@ function formatDate(date: Date) {
               )}
               <div data-slot="format-options">
                 {formats.map(f => (
-                  <a href={f.href} data-slot="format-option" download>
-                    <span data-slot="format-tag">{f.label}</span>
-                    <span data-slot="format-cta">Download PDF</span>
-                  </a>
+                  f.href ? (
+                    <a href={f.href} data-slot="format-option" download>
+                      <span data-slot="format-tag">{f.label}</span>
+                      <span data-slot="format-cta">Download PDF</span>
+                    </a>
+                  ) : (
+                    <div data-slot="format-option" data-disabled aria-disabled="true">
+                      <span data-slot="format-tag">{f.label}</span>
+                      <span data-slot="format-cta">Coming soon</span>
+                    </div>
+                  )
                 ))}
               </div>
             </div>
@@ -207,9 +215,27 @@ function formatDate(date: Date) {
           </section>
         )}
 
-        <section data-component="detail-content" data-empty={hasNotes ? undefined : ''}>
+        <section data-component="detail-content" data-empty={hasNotes || item.data.diagrams.length ? undefined : ''}>
           <h2 data-slot="section-label">Notes &amp; comments</h2>
           <Content />
+          {item.data.diagrams.length > 0 && (
+            <div data-slot="diagram-grid">
+              {item.data.diagrams.map(d => (
+                <figure data-slot="diagram-tile" title={d.name}>
+                  <a href={asset(d.pdf ?? d.image)} target="_blank" rel="noopener" data-slot="diagram-preview">
+                    <img src={asset(d.image)} alt={`Diagram: ${d.name}`} loading="lazy" />
+                  </a>
+                  <figcaption data-slot="diagram-bar">
+                    <span data-slot="diagram-name">{d.name}</span>
+                    <span data-slot="diagram-files">
+                      {d.tex && <a href={asset(d.tex)} download data-slot="diagram-file">tex</a>}
+                      {d.pdf && <a href={asset(d.pdf)} download data-slot="diagram-file">pdf</a>}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
         </section>
 
       </div>
