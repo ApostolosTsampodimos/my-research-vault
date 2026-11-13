@@ -1,6 +1,6 @@
 ---
 title: "QFT Talks, Part 4: QED and QCD Examples"
-date: 2026-12-01
+date: 2026-12-04
 type: talk
 venue: "FTMC, Vilnius (with Cheng Cheng)"
 pdf: /assets/pdfs/lecture-qft-part-4-qed-qcd-examples.pdf
