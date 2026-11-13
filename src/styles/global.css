@@ -1423,6 +1423,13 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   object-fit: cover;
   border: 2.5px solid var(--color-border-weak);
   border-radius: 6px;
+  /* White slides glare against the dark scene: dim them, full brightness on hover */
+  filter: brightness(0.78);
+  transition: filter 0.25s;
+}
+
+[data-slot="format-cover"]:hover {
+  filter: none;
 }
 
 /* Posters are portrait: a narrower column, shown whole rather than cropped to 16:9 */
@@ -1545,6 +1552,14 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   background: #fff;
+  /* Dimmed like the slide cover; brightens when the tile is hovered or focused */
+  filter: brightness(0.72);
+  transition: filter 0.25s;
+}
+
+[data-slot="diagram-tile"]:hover [data-slot="diagram-preview"] img,
+[data-slot="diagram-tile"]:focus-within [data-slot="diagram-preview"] img {
+  filter: none;
 }
 
 [data-slot="diagram-bar"] {
