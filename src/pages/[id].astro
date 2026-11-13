@@ -236,6 +236,18 @@ function formatDate(date: Date) {
               ))}
             </div>
           )}
+          {item.data.diagrams.length > 0 && (
+            <dialog data-component="diagram-viewer" aria-label="Diagram">
+              <div data-slot="viewer-frame">
+                <img data-slot="viewer-image" alt="" />
+                <div data-slot="viewer-bar">
+                  <span data-slot="viewer-name"></span>
+                  <span data-slot="viewer-files"></span>
+                  <button type="button" data-slot="viewer-close" aria-label="Close">✕</button>
+                </div>
+              </div>
+            </dialog>
+          )}
         </section>
 
       </div>
@@ -245,6 +257,27 @@ function formatDate(date: Date) {
 </Base>
 
 <script>
+  // Diagram viewer: clicking a tile opens the diagram full-screen over the page instead of a new tab.
+  // Esc (native to <dialog>), the close button, or a click outside the diagram closes it.
+  const viewer = document.querySelector<HTMLDialogElement>('[data-component="diagram-viewer"]');
+  if (viewer) {
+    const img = viewer.querySelector<HTMLImageElement>('[data-slot="viewer-image"]')!;
+    const name = viewer.querySelector<HTMLElement>('[data-slot="viewer-name"]')!;
+    const files = viewer.querySelector<HTMLElement>('[data-slot="viewer-files"]')!;
+    document.querySelectorAll<HTMLElement>('[data-slot="diagram-tile"]').forEach(tile => {
+      tile.querySelector('[data-slot="diagram-preview"]')?.addEventListener('click', e => {
+        e.preventDefault();
+        const preview = tile.querySelector('img')!;
+        img.src = preview.src;
+        img.alt = preview.alt;
+        name.textContent = tile.title;
+        files.replaceChildren(...[...tile.querySelectorAll('[data-slot="diagram-file"]')].map(a => a.cloneNode(true)));
+        viewer.showModal();
+      });
+    });
+    viewer.querySelector('[data-slot="viewer-close"]')?.addEventListener('click', () => viewer.close());
+    viewer.addEventListener('click', e => { if (e.target === viewer) viewer.close(); });  }
+
   const cite = document.querySelector<HTMLButtonElement>('[data-cite]');
   cite?.addEventListener('click', async () => {
     try {

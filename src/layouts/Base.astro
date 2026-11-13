@@ -32,6 +32,9 @@ const imageUrl = new URL(previewImage.src, Astro.site);
   <meta property="og:url" content={pageUrl} />
   <meta property="og:image" content={imageUrl} />
   <meta name="twitter:card" content="summary_large_image" />
+  <!-- Apply the saved neon colour before first paint, so a blue choice never flashes pink -->
+  <script is:inline>
+    try { if (localStorage.getItem('neon') === 'blue') document.documentElement.dataset.neon = 'blue'; } catch (e) {}  </script>
 </head>
 <body>
   <div id="backdrop" aria-hidden="true">
@@ -75,6 +78,10 @@ const imageUrl = new URL(previewImage.src, Astro.site);
     </svg>
     <span data-slot="rain-toggle-label">Rain</span>
   </button>
+  <button data-slot="neon-toggle" type="button" aria-label="Switch neon colour">
+    <span data-slot="neon-swatch" aria-hidden="true"></span>
+    <span>Neon</span>
+  </button>
   <script is:inline>
     (function() {
       var back = document.getElementById('rain-back');
@@ -88,6 +95,16 @@ const imageUrl = new URL(previewImage.src, Astro.site);
       var far = [], near = [], splashes = [];
       var running = false;
       var pool = {};
+
+      // Rain is tinted by the neon theme: hues come from the CSS tokens and refresh on a switch
+      var neonH = 330, farH = 290;
+      function readHues() {
+        var cs = getComputedStyle(document.documentElement);
+        neonH = parseFloat(cs.getPropertyValue('--neon-h')) || 330;
+        farH = parseFloat(cs.getPropertyValue('--rain-far-h')) || 290;
+      }
+      readHues();
+      document.addEventListener('neonchange', readHues);
 
       // z is depth: 0 = far away, 1 = right in front of the viewer
       function makeDrop(z, randomY) {
@@ -217,7 +234,7 @@ const imageUrl = new URL(previewImage.src, Astro.site);
         }
 
         // Far drops are too thin for a gradient to show: plain strokes, one path per layer
-        bctx.strokeStyle = 'hsl(290,35%,72%)';
+        bctx.strokeStyle = 'hsl(' + farH + ',35%,72%)';
         for (var l = 0; l < FAR_LAYERS; l++) {
           var lz = (l + 0.5) / FAR_LAYERS * 0.5;
           bctx.globalAlpha = (0.15 + lz * 0.45) * 0.6; // ≈ the average of a fading gradient
@@ -236,7 +253,7 @@ const imageUrl = new URL(previewImage.src, Astro.site);
           var n = near[j];
           fall(n);
           if (land(n, 0.25 + (n.z - 0.55) / 0.45 * 0.75, r, visible, 1) || n.y - n.len > H) { near[j] = nearDrop(false); continue; }
-          drawDrop(fctx, n, 'hsla(330,60%,82%,');
+          drawDrop(fctx, n, 'hsla(' + neonH + ',60%,82%,');
         }
 
         // Splashes: a flattened ripple ring plus a few droplets thrown up
@@ -249,10 +266,10 @@ const imageUrl = new URL(previewImage.src, Astro.site);
           var rx = s.s * (2 + p * 14);
           fctx.beginPath();
           fctx.ellipse(s.x, s.y, rx, rx * 0.25, 0, 0, Math.PI * 2);
-          fctx.strokeStyle = 'hsla(320,70%,82%,' + a + ')';
+          fctx.strokeStyle = 'hsla(' + (neonH - 10) + ',70%,82%,' + a + ')';
           fctx.lineWidth = 0.8 + s.s * 0.5;
           fctx.stroke();
-          fctx.fillStyle = 'hsla(330,70%,88%,' + a + ')';
+          fctx.fillStyle = 'hsla(' + neonH + ',70%,88%,' + a + ')';
           for (var b = 0; b < s.bits.length; b++) {
             var bit = s.bits[b];
             bit.x += bit.vx;
@@ -315,6 +332,23 @@ const imageUrl = new URL(previewImage.src, Astro.site);
       try { saved = localStorage.getItem('rain'); } catch (e) {}
       var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       setRain(saved ? saved === 'on' : !reduced, false);
+    })();
+
+    // Neon switch: pink <-> blue, remembered per browser; the rain listens for 'neonchange'
+    (function() {
+      var btn = document.querySelector('[data-slot="neon-toggle"]');
+      var root = document.documentElement;
+      function label() {
+        btn.setAttribute('aria-label', root.dataset.neon === 'blue' ? 'Switch neon to pink' : 'Switch neon to blue');
+      }
+      label();
+      btn.addEventListener('click', function() {
+        var blue = root.dataset.neon !== 'blue';
+        if (blue) root.dataset.neon = 'blue'; else delete root.dataset.neon;
+        try { localStorage.setItem('neon', blue ? 'blue' : 'pink'); } catch (e) {}
+        label();
+        document.dispatchEvent(new Event('neonchange'));
+      });
     })();
 
     // Backdrop parallax: the far scene drifts slower than the page

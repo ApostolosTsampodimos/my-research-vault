@@ -44,6 +44,20 @@ html {
   --animation: #5eeaa3;
   --lecture:   #e8c96a;
   --paper:     #e89a6a;
+
+  /* Neon theme: pink by default; [data-neon="blue"] on <html> swaps the palette site-wide.
+     --neon-rgb feeds translucent uses (rgb(var(--neon-rgb) / 0.4)); --neon-h tints glows and rain */
+  --neon: #ff1177;
+  --neon-rgb: 255 17 119;
+  --neon-h: 330;
+  --rain-far-h: 290;
+}
+
+:root[data-neon="blue"] {
+  --neon: #1ab8ff;
+  --neon-rgb: 26 184 255;
+  --neon-h: 199;
+  --rain-far-h: 215;
 }
 
 @media (max-width: 60rem) {
@@ -232,7 +246,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     0 0 0 1px hsla(270, 30%, 3%, 0.6),
     0 30px 60px -10px hsla(270, 40%, 2%, 0.8),
     0 60px 140px 10px hsla(270, 40%, 2%, 0.6),
-    0 0 90px -20px hsla(325, 80%, 55%, 0.25);
+    0 0 90px -20px hsla(var(--neon-h), 80%, 55%, 0.25);
 }
 
 @media (max-width: 65rem) {
@@ -271,9 +285,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 [data-slot="hero-github"]:hover,
 [data-page] [data-slot="contact-icon"]:hover,
 [data-page] [data-slot="contact-icon"]:focus-visible {
-  color: #ff1177;
+  color: var(--neon);
   text-decoration: none;
-  filter: drop-shadow(0 0 8px #ff1177) drop-shadow(0 0 20px #ff1177);
+  filter: drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 20px var(--neon));
 }
 
 /* ORCID glows in its own green rather than pink */
@@ -376,17 +390,17 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-decoration: none;
-  color: #ff1177;
+  color: var(--neon);
   padding: 0.2rem 0.6rem;
   border: none;
   background: none;
   text-shadow:
-    0 0 7px #ff1177,
-    0 0 10px #ff1177,
-    0 0 21px #ff1177,
-    0 0 42px #ff1177,
-    0 0 82px #ff1177,
-    0 0 92px #ff1177;
+    0 0 7px var(--neon),
+    0 0 10px var(--neon),
+    0 0 21px var(--neon),
+    0 0 42px var(--neon),
+    0 0 82px var(--neon),
+    0 0 92px var(--neon);
   transition: color 0.2s, transform 0.2s, text-shadow 0.2s;
   animation: neon-flicker 4s infinite;
   position: relative;
@@ -399,11 +413,11 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     0 0 7px #fff,
     0 0 10px #fff,
     0 0 21px #fff,
-    0 0 42px #ff1177,
-    0 0 82px #ff1177,
-    0 0 92px #ff1177,
-    0 0 102px #ff1177,
-    0 0 151px #ff1177;
+    0 0 42px var(--neon),
+    0 0 82px var(--neon),
+    0 0 92px var(--neon),
+    0 0 102px var(--neon),
+    0 0 151px var(--neon);
   text-decoration: none;
 }
 
@@ -536,7 +550,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   content: '';
   position: absolute;
   inset: 0;
-  background: #ff1177;
+  background: var(--neon);
   pointer-events: none;
   -webkit-mask: linear-gradient(#000, #000) left / 0% 100% no-repeat;
   mask: linear-gradient(#000, #000) left / 0% 100% no-repeat;
@@ -583,22 +597,22 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 
 [data-slot="filter-btn"]:hover {
   --frame: var(--color-border);
-  color: #ff1177;
+  color: var(--neon);
   text-shadow:
-    0 0 7px #ff1177,
-    0 0 15px #ff1177,
-    0 0 30px #ff1177;
+    0 0 7px var(--neon),
+    0 0 15px var(--neon),
+    0 0 30px var(--neon);
 }
 
 [data-slot="filter-btn"].active {
-  --plate: color-mix(in srgb, #ff1177 7%, var(--color-background-weak));
-  --stripe: hsla(340, 100%, 60%, 0.3);
-  color: #ff1177;
+  --plate: color-mix(in srgb, var(--neon) 7%, var(--color-background-weak));
+  --stripe: hsla(var(--neon-h), 100%, 60%, 0.3);
+  color: var(--neon);
   text-shadow:
-    0 0 7px #ff1177,
-    0 0 10px #ff1177,
-    0 0 21px #ff1177,
-    0 0 42px #ff1177;
+    0 0 7px var(--neon),
+    0 0 10px var(--neon),
+    0 0 21px var(--neon),
+    0 0 42px var(--neon);
 }
 
 /* Flicker the label, not the button, so the plate behind it stays lit */
@@ -655,8 +669,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-slot="search"]:focus-within {
-  background: #ff1177;
-  color: #ff1177;
+  background: var(--neon);
+  color: var(--neon);
 }
 
 [data-slot="search"] input {
@@ -699,8 +713,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-slot="filter-btn"].active [data-slot="filter-count"] {
-  color: hsla(340, 100%, 60%, 0.6);
-  border-color: hsla(340, 100%, 60%, 0.35);
+  color: hsla(var(--neon-h), 100%, 60%, 0.6);
+  border-color: hsla(var(--neon-h), 100%, 60%, 0.35);
 }
 
 /* ── Materials list ────────────────────────────────────────── */
@@ -991,7 +1005,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   bottom: 0;
   height: 65%;
   background:
-    radial-gradient(ellipse 45% 35% at 50% 0%, hsla(325, 85%, 60%, 0.14), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 50% 0%, hsla(var(--neon-h), 85%, 60%, 0.14), transparent 70%),
     linear-gradient(to bottom, hsla(270, 30%, 9%, 0.35) 0%, hsla(270, 30%, 6%, 0.85) 40%, hsl(270, 30%, 4%) 100%);
 }
 
@@ -1003,8 +1017,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, hsla(325, 70%, 70%, 0.45) 30%, hsla(325, 70%, 70%, 0.45) 70%, transparent);
-  box-shadow: 0 0 12px 1px hsla(325, 80%, 60%, 0.35);
+  background: linear-gradient(to right, transparent, hsla(var(--neon-h), 70%, 70%, 0.45) 30%, hsla(var(--neon-h), 70%, 70%, 0.45) 70%, transparent);
+  box-shadow: 0 0 12px 1px hsla(var(--neon-h), 80%, 60%, 0.35);
   z-index: 1;
 }
 
@@ -1019,7 +1033,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   --rim-near: 13px;
   --wood: hsla(305, 16%, 13%, 0.7);
   --wood-face: hsla(305, 18%, 8%, 0.85);
-  --wood-edge: hsla(335, 45%, 45%, 0.22);
+  --wood-edge: hsla(var(--neon-h), 45%, 45%, 0.22);
   position: absolute;
   top: 14px;
   left: 0;
@@ -1036,7 +1050,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     linear-gradient(to bottom, var(--wood-edge) 0 1px, var(--wood-face) 1px) bottom / 100% var(--face) no-repeat,
     /* rim: catch-light on the far edge, faint grain, weathered board */
     linear-gradient(to bottom, var(--wood-edge) 0 1px, transparent 1px),
-    repeating-linear-gradient(to bottom, transparent 0 2px, hsla(320, 30%, 35%, 0.05) 2px 3px),
+    repeating-linear-gradient(to bottom, transparent 0 2px, hsla(var(--neon-h), 30%, 35%, 0.05) 2px 3px),
     var(--wood);
 }
 
@@ -1052,7 +1066,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
     calc(var(--near) + var(--rim-near)) calc(100% - var(--face) - var(--rim-near))
   );
   background:
-    radial-gradient(ellipse 45% 40% at 50% 0%, hsla(325, 85%, 60%, 0.14), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 50% 0%, hsla(var(--neon-h), 85%, 60%, 0.14), transparent 70%),
     repeating-linear-gradient(to bottom, transparent 0 7px, hsla(300, 60%, 75%, 0.03) 7px 8px),
     linear-gradient(to bottom, hsla(270, 35%, 4%, 0.9), hsla(270, 35%, 3%, 0.95));
 }
@@ -1089,7 +1103,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 
 /* ── Rain toggle ──────────────────────────────────────────── */
 /* Same chamfered plate as the filter buttons: button bg is the frame, ::after the face */
-[data-slot="rain-toggle"] {
+[data-slot="rain-toggle"],
+[data-slot="neon-toggle"] {
   --c: 8px;
   position: fixed;
   right: 1.25rem;
@@ -1112,12 +1127,13 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #ff1177;
-  text-shadow: 0 0 6px #ff1177;
+  color: var(--neon);
+  text-shadow: 0 0 6px var(--neon);
   transition: color 0.3s, text-shadow 0.3s, background 0.3s;
 }
 
-[data-slot="rain-toggle"]::after {
+[data-slot="rain-toggle"]::after,
+[data-slot="neon-toggle"]::after {
   --c: 7px;
   content: '';
   position: absolute;
@@ -1130,8 +1146,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   );
 }
 
-[data-slot="rain-toggle"] svg {
-  filter: drop-shadow(0 0 4px #ff1177);
+[data-slot="rain-toggle"] svg,
+[data-slot="neon-toggle"] svg {
+  filter: drop-shadow(0 0 4px var(--neon));
 }
 
 [data-slot="rain-icon-off"] {
@@ -1155,15 +1172,35 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   display: inline;
 }
 
-[data-slot="rain-toggle"]:hover {
-  color: #ff1177;
-  text-shadow: 0 0 7px #ff1177, 0 0 15px #ff1177;
+[data-slot="rain-toggle"]:hover,
+[data-slot="neon-toggle"]:hover {
+  color: var(--neon);
+  text-shadow: 0 0 7px var(--neon), 0 0 15px var(--neon);
 }
 
 /* clip-path would cut an outline, so focus lights the frame instead */
-[data-slot="rain-toggle"]:focus-visible {
+[data-slot="rain-toggle"]:focus-visible,
+[data-slot="neon-toggle"]:focus-visible {
   outline: none;
+  background: var(--neon);
+}
+
+/* Neon switch: stacked above the rain toggle; the swatch shows the colour you would switch to */
+[data-slot="neon-toggle"] {
+  bottom: calc(1.25rem + 2.9rem);
+}
+
+[data-slot="neon-swatch"] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1ab8ff;
+  box-shadow: 0 0 6px #1ab8ff;
+}
+
+:root[data-neon="blue"] [data-slot="neon-swatch"] {
   background: #ff1177;
+  box-shadow: 0 0 6px #ff1177;
 }
 
 /* Links stand on the horizon like a small roadside sign */
@@ -1189,17 +1226,17 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-slot="ground-sign"] a:hover {
-  color: #ff1177;
+  color: var(--neon);
   text-shadow:
-    0 0 7px #ff1177,
-    0 0 15px #ff1177,
-    0 0 30px #ff1177;
+    0 0 7px var(--neon),
+    0 0 15px var(--neon),
+    0 0 30px var(--neon);
 }
 
 [data-slot="ground-sep"] {
-  color: #ff1177;
+  color: var(--neon);
   font-size: 8px;
-  text-shadow: 0 0 6px #ff1177;
+  text-shadow: 0 0 6px var(--neon);
 }
 
 [data-slot="ground-legal"] {
@@ -1231,14 +1268,14 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-slot="back-link"] svg {
-  color: #ff1177;
-  filter: drop-shadow(0 0 4px #ff1177);
+  color: var(--neon);
+  filter: drop-shadow(0 0 4px var(--neon));
   transition: transform 0.25s ease;
 }
 
 [data-page] [data-slot="back-link"]:hover {
   color: var(--color-text-strong);
-  text-shadow: 0 0 8px hsla(330, 100%, 60%, 0.5);
+  text-shadow: 0 0 8px hsla(var(--neon-h), 100%, 60%, 0.5);
 }
 
 [data-slot="back-link"]:hover svg {
@@ -1321,8 +1358,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   content: '';
   width: 18px;
   height: 2px;
-  background: #ff1177;
-  box-shadow: 0 0 6px #ff1177;
+  background: var(--neon);
+  box-shadow: 0 0 6px var(--neon);
 }
 
 /* ── Detail: actions ───────────────────────────────────────── */
@@ -1463,7 +1500,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1.1rem;
-  border: 2px solid rgba(255, 17, 119, 0.45);
+  border: 2px solid rgb(var(--neon-rgb) / 0.45);
   border-radius: 6px;
   color: var(--color-text-weak);
   text-decoration: none;
@@ -1471,14 +1508,14 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-page] [data-slot="format-option"]:hover {
-  border-color: #ff1177;
+  border-color: var(--neon);
   background: var(--color-background-weak);
-  box-shadow: 0 0 8px rgba(255, 17, 119, 0.3);
+  box-shadow: 0 0 8px rgb(var(--neon-rgb) / 0.3);
   text-decoration: none;
 }
 
 [data-slot="format-option"]:focus-visible {
-  outline: 2px solid #ff1177;
+  outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
 
@@ -1487,8 +1524,8 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #ff1177;
-  border: 1.5px solid #ff1177;
+  color: var(--neon);
+  border: 1.5px solid var(--neon);
   border-radius: 4px;
   padding: 0.15rem 0.5rem;
   line-height: 1.4;
@@ -1505,7 +1542,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 
 [data-slot="format-option"]:hover [data-slot="format-cta"] {
   color: var(--color-text-strong);
-  text-shadow: 0 0 6px rgba(255, 17, 119, 0.6);
+  text-shadow: 0 0 6px rgb(var(--neon-rgb) / 0.6);
 }
 
 /* Not yet available (e.g. a talk's expanded cut): dimmed, no hover */
@@ -1513,7 +1550,7 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 [data-page] [data-slot="format-option"][data-disabled]:hover {
   opacity: 0.45;
   cursor: not-allowed;
-  border-color: rgba(255, 17, 119, 0.45);
+  border-color: rgb(var(--neon-rgb) / 0.45);
   background: none;
   box-shadow: none;
 }
@@ -1535,15 +1572,15 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   position: relative;
   margin: 0;
   overflow: hidden;
-  border: 2px solid rgba(255, 17, 119, 0.45);
+  border: 2px solid rgb(var(--neon-rgb) / 0.45);
   border-radius: 6px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 [data-slot="diagram-tile"]:hover,
 [data-slot="diagram-tile"]:focus-within {
-  border-color: #ff1177;
-  box-shadow: 0 0 8px rgba(255, 17, 119, 0.35);
+  border-color: var(--neon);
+  box-shadow: 0 0 8px rgb(var(--neon-rgb) / 0.35);
 }
 
 [data-slot="diagram-preview"] img {
@@ -1602,9 +1639,9 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.5;
-  color: #ff1177;
+  color: var(--neon);
   background: rgba(10, 5, 20, 0.8);
-  border: 1.5px solid #ff1177;
+  border: 1.5px solid var(--neon);
   border-radius: 3px;
   padding: 0.05rem 0.35rem;
   text-decoration: none;
@@ -1612,9 +1649,90 @@ body:has([data-component="material"]:hover) [data-slot="window-glow"] {
 }
 
 [data-page] [data-slot="diagram-file"]:hover {
-  background: #ff1177;
+  background: var(--neon);
   color: #fff;
   text-decoration: none;
+}
+
+/* ── Detail: diagram viewer (full-screen overlay) ───────────── */
+/* The global reset zeroes margins, which strips <dialog>'s own centring: restore it explicitly */
+[data-component="diagram-viewer"] {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  max-width: min(84vw, 960px);
+  max-height: 80vh;
+  padding: 0;
+  border: 2px solid var(--neon);
+  border-radius: 8px;
+  background: rgba(10, 5, 20, 0.95);
+  box-shadow: 0 0 24px rgb(var(--neon-rgb) / 0.35);
+  overflow: hidden;
+}
+
+[data-component="diagram-viewer"]::backdrop {
+  background: rgba(5, 2, 12, 0.82);
+  backdrop-filter: blur(3px);
+}
+
+[data-component="diagram-viewer"][open] {
+  animation: viewer-in 0.2s ease-out;
+}
+
+@keyframes viewer-in {
+  from { opacity: 0; transform: scale(0.97); }
+}
+
+[data-slot="viewer-image"] {
+  display: block;
+  max-width: 100%;
+  max-height: calc(80vh - 3.2rem);
+  margin: 0 auto;
+  background: #fff;
+}
+
+[data-slot="viewer-bar"] {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid rgb(var(--neon-rgb) / 0.35);
+}
+
+[data-slot="viewer-name"] {
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+  font-size: 12px;
+  color: #eee;
+  overflow-wrap: anywhere;
+}
+
+[data-slot="viewer-files"] {
+  display: flex;
+  gap: 0.3rem;
+}
+
+[data-slot="viewer-close"] {
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--neon);
+  background: none;
+  border: 1.5px solid var(--neon);
+  border-radius: 3px;
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+[data-slot="viewer-close"]:hover,
+[data-slot="viewer-close"]:focus-visible {
+  background: var(--neon);
+  color: #fff;
+  outline: none;
 }
 
 /* ── Detail: content (rendered markdown) ───────────────────── */
