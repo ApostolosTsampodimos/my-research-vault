@@ -5,7 +5,7 @@ import TypeBadge from '../components/TypeBadge.astro';
 import { renderMath, stripMath } from '../lib/math';
 
 const allMaterials = await getCollection('materials', ({ data }) => !data.draft);
-allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+allMaterials.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id));
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const types = ['all', 'paper', 'talk', 'poster', 'animation'] as const;
